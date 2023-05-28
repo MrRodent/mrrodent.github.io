@@ -165,13 +165,17 @@ footer {
     width: 90%;
 }
 
+.infoboksi h3 {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
 .infoboksi h4 {
     line-height: 1;
     margin-bottom: 0;
 }
 
 .infoboksi h5 {
-    font-style: italic;
     line-height: 0.1;
     margin-bottom: 0;
 }
@@ -190,6 +194,11 @@ p.koodi {
     font-size: 0.7em;
     font-style: italic;
     line-height: 1;
+    background-color: var(--tausta);
+    width: 25%;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
 }
 
 /* Kriteerit */
@@ -254,4 +263,17 @@ tr:nth-child(even) {
         font-size: 0.8em;
         width: 95%;
     }
+
+    .infoboksi {
+        transition: font-size 0.5s ease-in-out;
+        font-size: 0.8em;
+    }
+
+    .koodi {
+        min-width: 120px;
+    }
+}
+
+ul .ammattitaitovaatimukset {
+    list-style-type: inside;
 }
