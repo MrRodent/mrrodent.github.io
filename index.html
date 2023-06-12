@@ -1,50 +1,187 @@
 <!doctype html>
-<html lang="fi">
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <title>tp.Portfolio</title>
+    <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS v5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- CSS link -->
+    <link rel="stylesheet" href="style.css">
+  </head>
 
-<head>
-  <title>OHJ2</title>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <!-- Bootstrap CSS v5.2.1 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-
-</head>
-
-<body>
-  <header>
-    <h1 class="mt-5 text-center display-1">Moi!</h1>
-  </header>
-
-  <main>
-    <!-- Napit -->
-    <div class="container-fluid mt-5 mp-5">
-        <div class="d-grid gap-3">
-            <a name="v1btn" id="v1btn" class="btn btn-primary" href="v1/etusivu_v1.html" role="button">Versio 1</a>
-            <a name="v2btn" id="v2btn" class="btn btn-outline-primary" href="v2/etusivu_v2.html" role="button">Versio 2</a>
+  <body>
+    <main>
+      <!-- Hero -->
+      <section class="container-fluid bgimage" id="home">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 hero_text">
+            <h2 class="hero_title">Hello, I'm Tommi.</h2>
+            <p class="hero_desc text">I'm a student programmer from Finland.</p>
+            <a href="#about" class="btn btn-outline-danger buttonstyle">View my work</a>
+          </div>
         </div>
-    </div>
-  </main>
+      </section>
 
-  <footer>
-    <footer class="py-3 my-4 fixed-bottom">
-        <ul class="nav justify-content-center border-bottom pb-3 mb-3">
-            <li class="nav-item"><a href="v1/etusivu_v1.html" class="nav-link px-2 text-muted">Versio 1</a></li>
-            <li class="nav-item"><a href="v2/etusivu_v2.html" class="nav-link px-2 text-muted">Versio 2</a></li>
-        </ul>
-        <p class="text-center text-muted">&copy;2023 TP</p>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#about">tp</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#projects">Projects</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+      </nav>
+      
+      <!-- About -->
+      <section id="about">
+        <div class="container mt-0 mx-auto" style="max-width: 700px;">
+          <div class="row text-center">
+            <h1 class="display-2 mb-auto mt-5">About</h1>
+            <i class="bi bi-person" style="font-size: 10rem"></i>
+            <p class="text-start">An enthusiastic programmer with a passion for learning, currently studying software development in Mikkeli. I have experience with Python, C, JavaScript and other web development tools. I also have a good command of several human languages, such as English, Spanish and German.</p>
+            <p class="text-start">When not in front of the computer, I'm probably playing some tabletop games or whatever musical instrument I find fun at the moment.</p>
+          </div>
+          <!-- Language display -->
+          <div class="row mt-5">
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" style="height: 40px" alt="Python logo">
+              <h6>Python</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" style="height: 40px" alt="C language logo"> 
+              <h6>C</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" style="height: 40px" alt="JavaScript logo"> 
+              <h6>JavaScript</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sqlite/sqlite-original.svg" style="height: 40px" alt="SQLite logo"> 
+              <h6>SQLite</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" style="height: 40px" alt="HTML logo">  
+              <h6>HTML</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" style="height: 40px" alt="CSS logo">  
+              <h6>CSS</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" style="height: 40px" alt="Bootstrap logo">  
+              <h6>Bootstrap</h6>
+            </div>
+            <div class="col text-center langcard">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" style="height: 40px" alt="git logo">
+              <h6>git</h6>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <!-- Projects -->
+      <section id="projects">
+        <div class="container mt-5 mx-auto">
+          <h1 class="text-center display-2 mb-auto">Projects</h1>
+
+          <!-- Project 1 -->
+          <div class="row my-5">
+            <div class="col-md-7 col-xl-6">
+              <img src="images/project1.jpg" class="card-img" alt="Image of a project" style="max-width: 600px">
+            </div>
+            <div class="col-md-5 col-xl-6 my-auto p-4">
+              <h3>Project 1</h3>
+              <p class="m-auto p-auto">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores ipsa totam obcaecati minus praesentium nemo quam minima id possimus dignissimos!</p>
+            </div>
+          </div>
+          <br>
+          
+          <!-- Project 2 (row reverse)-->
+          <div class="row my-5 flex-md-row-reverse">
+            <div class="col-md-7 col-xl-6">
+              <img src="images/project2.png" class="card-img" alt="Image of a project" style="max-width: 600px">
+            </div>
+            <div class="col-md-5 col-xl-6 my-auto p-4">
+              <h3>Project 2</h3>
+              <p class="m-auto p-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio veritatis ducimus quisquam mollitia consequatur dolorem nobis illum aliquam nemo recusandae.</p>
+            </div>
+          </div>
+          <br>
+          
+          <!-- Project 3 -->
+          <div class="row my-5">
+            <div class="col-md-7 col-xl-6">
+              <img src="images/project3.png" class="card-img" alt="Image of a project" style="max-width: 600px">
+            </div>
+            <div class="col-md-5 col-xl-6 my-auto p-4">
+              <h3>Project 3</h3>
+              <p class="m-auto p-auto">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure, voluptas magni. Debitis libero placeat nam iure autem consequuntur dolor earum eligendi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Contact -->
+      <!-- ei toiminnassa vielä -->
+      <section id="contact">
+        <div class="container-fluid" style="max-width: 400px;">
+          <!-- Form -->
+          <div class="row">
+            <h1 class="text-center display-2 mb-3">Contact</h1>
+            <p class="text-center">Want to work together or have any questions? <br>Don't hesitate to contact me.</p>
+            <div class="mb-3">
+              <input type="text" class="form-control formstyle" id="name" placeholder="Name">
+            </div>
+            <div class="mb-3">
+              <input type="email" class="form-control formstyle" id="email" placeholder="Email">
+            </div>
+            <div class="mb-3">
+              <textarea class="form-control formstyle" id="message" rows="5" placeholder="Write me a message"></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline-light buttonstyle">Submit</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div style="height: 2rem;"></div>
+      <div class="container-fluid mt-5 overflow-auto footerstyle">
+        <!-- Social media icons -->
+        <div class="social-icons mt-4">
+            <a href="https://github.com/MrRodent" target="_blank"><i class="bi bi-github"></i></a>
+            <a href="mailto:tommi@example.com" target="_blank"><i class="bi bi-envelope-fill"></i></a>
+        </div>
+        <h6 class="mt-2 mb-5">TOMMI PARTANEN &copy;2023</h6>
+      </div>
     </footer>
-  </footer>
-  <!-- Bootstrap JavaScript Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
-  </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
-    integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
-  </script>
-</body>
+    <!-- Bootstrap JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js" integrity="sha384-fbbOQedDUMZZ5KreZpsbe1LCZPVmfTnH7ois6mU1QK+m14rQ1l2bGBq41eYeM/fS" crossorigin="anonymous"></script>
+    <!-- Custom script -->
+    <script src="script/script.js"></script>
+  </body>
 </html>
