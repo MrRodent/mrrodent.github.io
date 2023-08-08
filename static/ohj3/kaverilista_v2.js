@@ -12,6 +12,8 @@ function tulosta(lista) {
 // Lisäys
 document.querySelector("#lisaa").addEventListener("click", function() {
     kaverit[i] = document.querySelector("input[name='nimi']").value;
+    // Tyhjennä rivi
+    document.querySelector("input[name='nimi']").value = "";
 
     // Tulosta listan loppuun
     document.querySelector("#tuloste").innerHTML += kaverit[i] + "<br>";
