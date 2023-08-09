@@ -12,8 +12,9 @@ function tulosta(lista) {
 // Lisäys
 document.querySelector("#lisaa").addEventListener("click", function() {
     kaverit[i] = document.querySelector("input[name='nimi']").value;
-    // Tyhjennä rivi
+    // Tyhjennys
     document.querySelector("input[name='nimi']").value = "";
+    document.querySelector("#poistovirhe").innerHTML = "";
 
     // Tulosta listan loppuun
     document.querySelector("#tuloste").innerHTML += kaverit[i] + "<br>";
@@ -26,14 +27,22 @@ document.querySelector("#poista").addEventListener("click", function() {
     let indeksi = kaverit.indexOf(poistettava);
 
     if (indeksi > -1) {
+        document.querySelector("input[name='nimi']").value = "";
+        document.querySelector("#poistovirhe").innerHTML = "";
         kaverit.splice(indeksi, 1);
         i -= 1;
         tulosta(kaverit)
-    };
+    }
+    else
+    {
+        document.querySelector("#poistovirhe").innerHTML = "Tarkista että nimi on kirjoitettu oikein";
+    }
+    ;
 });
 
 // Järjestely
 document.querySelector("#jarjesta").addEventListener("click", function() {
+    document.querySelector("#poistovirhe").innerHTML = "";
     kaverit.sort();
     tulosta(kaverit);
 });
