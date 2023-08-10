@@ -36,7 +36,7 @@ document.querySelector('#muuntonappi').addEventListener('click', () => {
             };
         }
         else if (suunta == 'fahcel') {
-            const muunnos = (syote - 32 * 5/9);
+            const muunnos = ((syote - 32) * 5/9);
             if (syote < -459.67) {
                 absoluuttinenNolla();
             }

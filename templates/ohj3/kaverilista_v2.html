@@ -17,11 +17,6 @@
     <nav class="navbar navbar-expand-sm navbar-light bg-light">
         <div class="container space-between">
         <a class="navbar-brand" href="../../index.html">OHJ3</a>
-        <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId"
-          aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavId">
           <ul class="navbar-nav me-auto mt-2 mt-lg-0">
             <!-- Dropdown -->
             <li class="nav-item dropdown">
@@ -36,7 +31,6 @@
               </div>
             </li>
           </ul>
-        </div>
       </div>
     </nav>
   </header>
@@ -50,19 +44,18 @@
         <div class="mb-3">
           <input type="text"
             class="form-control" name="nimi" id="nimi" placeholder="Kaverin nimi">
-          <p class="small text-danger" id="poistovirhe"></p>
-        </div>
-
-        <button id="lisaa" class="btn btn-primary">Lisää</button>
-        <button id="poista" class="btn btn-primary">Poista</button>
-        <button id="jarjesta" class="btn btn-primary">Järjestä</button>
-        <a href="kaverilista.html" class="btn btn-outline-primary float-end">Avaa v1</a>
-
+            <p class="small text-danger" id="poistovirhe"></p>
+          </div>
+          
+          <button id="lisaa" class="btn btn-primary">Lisää</button>
+          <button id="poista" class="btn btn-primary">Poista</button>
+          <button id="jarjesta" class="btn btn-primary">Järjestä</button>        
       </div>
-
+      
       <div class="container mt-3 p-5 bg-body-tertiary">
-        <p class="" id="tuloste"></p>
+        <p id="tuloste"></p>
       </div>
+      <a href="kaverilista.html" class="btn btn-outline-primary float-end mt-3">Avaa v1</a>
     </div>
 
   </main>
