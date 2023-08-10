@@ -2,7 +2,7 @@
 <html lang="fi">
 
 <head>
-  <title>Kaverilista v1</title>
+  <title>Lämpötilamuunnin</title>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -42,55 +42,67 @@
   </header>
 
   <main>
-    <div class="container p-5 col-lg-4">
-      <h1>Kaverilista</h1>
-      <p id="tuloste">Kerro kavereidesi nimet ja minä tulostan ne näytölle.</p>
+    <div class="container p-5 col-lg-6 col-xxl-5">
+      <h1>Lämpötilamuunnin</h1>
+      <p id="ohje">Muuntaa lämpötilan valitulla desimaalin tarkkuudella.</p>
       
-      <div class="mb-3">
-        <div class="mb-3">
-          <input type="text"
-            class="form-control" name="nimi0" id="nimi0" placeholder="Kaveri 1">
-        </div>
-        <input type="text"
-          class="form-control" name="nimi1" id="nimi1" placeholder="Kaveri 2">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi2" id="nimi2" placeholder="Kaveri 3">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi3" id="nimi3" placeholder="Kaveri 4">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi4" id="nimi4" placeholder="Kaveri 5">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi5" id="nimi5" placeholder="Kaveri 6">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi6" id="nimi6" placeholder="Kaveri 7">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi7" id="nimi7" placeholder="Kaveri 8">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi8" id="nimi8" placeholder="Kaveri 9">
-      </div>
-      <div class="mb-3">
-        <input type="text"
-          class="form-control" name="nimi9" id="nimi9" placeholder="Kaveri 10">
+      <!-- Tuloste -->
+      <div class="container mt-3 p-5 bg-body-tertiary">
+        <p class="display-1 text-center" id="tuloste">&#x1F321;</p>
       </div>
 
-      <button id="tulostus" class="btn btn-primary">Tulosta</button>
-      <a href="kaverilista_v2.html" class="btn btn-outline-primary float-end">Avaa v2</a>
+      <div class="row mt-5">
+        <div class="col">
+          <!-- Lämpötila -->
+          <label for="syote" class="form-label">Muunnettava lämpötila</label>
+          <div class="row">
+            <div class="col-8 col-xxl-7">
+              <input type="text"
+                class="form-control" name="syote" id="syote" placeholder="0">
+                <p class="small text-danger" id="syottovirhe"></p>
+
+            </div>
+          </div>
+
+          <!-- Desimaalivalitsin -->
+          <div class="mt-4">
+            <h6>Tulosteen tarkkuus</h6>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="desimaalit" id="1" checked>
+              <label class="form-check-label" for="1">
+                1 desimaali
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="desimaalit" id="2">
+              <label class="form-check-label" for="2">
+                2 desimaalia
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="desimaalit" id="3">
+              <label class="form-check-label" for="3">
+                3 desimaalia
+              </label>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="col">
+          <!-- Muunto -->
+          <label for="muuntosuunta" class="form-label">Muuntosuunta</label>
+          <select multiple class="form-select" name="muuntosuunta" id="muuntosuunta">
+            <option value="celfah" selected>Celsius -> Fahrenheit</option>
+            <option value="fahcel">Fahrenheit -> Celsius</option>
+          </select>
+          <button id="muuntonappi" class="btn btn-primary mt-3 float-end">Muunna</button>
+        </div>
+      </div>
+
 
     </div>
+
   </main>
   
   <footer>
@@ -103,7 +115,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js" integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa" crossorigin="anonymous"></script>
   <!-- Projektikohtainen skripti -->
-  <script defer src="../../static/ohj3/kaverilista.js"></script>
+  <script defer src="../../static/ohj3/lampotilamuunnin.js"></script>
 </body>
 
 </html>
