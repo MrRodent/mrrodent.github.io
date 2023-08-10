@@ -3,7 +3,7 @@ function syotteenTarkistus(syote) {
         document.querySelector('#syottovirhe').innerHTML = 'Syötä ensin lämpötila';
         return false;
     }
-    else if (isNaN(syote.replace(',', '.'))) {
+    else if (isNaN(syote)) {
         document.querySelector('#syottovirhe').innerHTML = 'Syötä vain numeroita';
         return false;
     }
@@ -21,7 +21,7 @@ function absoluuttinenNolla() {
 // Muuntonapin toiminta
 document.querySelector('#muuntonappi').addEventListener('click', () => {
     const suunta = document.querySelector('#muuntosuunta').value;
-    const syote = document.querySelector('#syote').value;
+    const syote = document.querySelector('#syote').value.replace(',', '.');
     const desimaali = parseInt(document.querySelector('input[name="desimaalit"]:checked').id);
     const tarkistus = syotteenTarkistus(syote);
     
