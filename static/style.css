@@ -1,1 +1,9 @@
-/* 31.07.23 rewipe */
+@font-face {
+    font-family: 'RedAlert';
+    src: url('../static/red_alert.ttf') format('truetype');
+}
+  
+.kasibitti {
+font-family: 'RedAlert', 'Courier New', Courier, monospace;
+line-height: 1;
+}
