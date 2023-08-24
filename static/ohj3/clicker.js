@@ -254,7 +254,7 @@ function kaato() {
 // Animoinnit
 function luoNeula() {
     // Array neulasten kuvista
-    var neulaArray = [
+    let neulaArray = [
         '../../static/images/clicker/neula1.png',
         '../../static/images/clicker/neula2.png',
         '../../static/images/clicker/neula3.png',
@@ -265,10 +265,10 @@ function luoNeula() {
         '../../static/images/clicker/neula8.png'
     ];    
     // Valitse random kuva
-    var randomIndex = Math.floor(Math.random() * neulaArray.length);
-    var randomNeula = neulaArray[randomIndex];
+    let randomIndex = Math.floor(Math.random() * neulaArray.length);
+    let randomNeula = neulaArray[randomIndex];
     // Luo kuva ja palauta
-    var img = new Image();
+    let img = new Image();
     img.src = randomNeula;
     img.style.position = 'absolute';
     img.style.width = '3px';
@@ -283,9 +283,9 @@ function pudotaKlikkaus() {
     document.onclick = function(event) {
         img.style.left = event.clientX + 'px';
         img.style.top = event.clientY + 'px';
-        var pos = event.clientY;
-        var offset = Math.floor(Math.random() * 120) - 60;
-        var id = setInterval(frame, 1);
+        let pos = event.clientY;
+        let offset = Math.floor(Math.random() * 120) - 60;
+        let id = setInterval(frame, 1);
         // Pudota neulanen näkyvän ikkunan yli ja poista jottei vie liikaa resursseja
         function frame() {
             if (pos == window.innerHeight + 100) {
@@ -305,10 +305,10 @@ function pudotaRandom () {
     let img = luoNeula();
     document.body.appendChild(img);
     // Animointi
-    var pos = 0;
-    var left = Math.floor(Math.random() * window.innerWidth);
+    let pos = 0;
+    let left = Math.floor(Math.random() * window.innerWidth);
     img.style.left = left + 'px';
-    var id = setInterval(frame, 2);
+    let id = setInterval(frame, 2);
     // Pudota neulanen näkyvän ikkunan yli ja poista jottei vie liikaa resursseja
     function frame() {
         if (pos == window.innerHeight + 100) {
