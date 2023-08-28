@@ -2,8 +2,43 @@
     font-family: 'RedAlert';
     src: url('../static/red_alert.ttf') format('truetype');
 }
-  
+
 .kasibitti {
 font-family: 'RedAlert', 'Courier New', Courier, monospace;
 line-height: 1;
+}
+
+/* Sikanoppapelin CSS */
+.dimmed {
+    filter: brightness(50%);
+}
+
+.heittoanimaatio {
+    animation-name: heitto;
+    animation-duration: 200ms;
+    animation-direction: alternate;
+    animation-iteration-count: 2;
+    animation-timing-function: ease-out;
+}
+
+.huonoheittoanimaatio {
+    animation-name: huonoheitto;
+    animation-duration: 200ms;
+    animation-direction: alternate;
+    animation-iteration-count: 2;
+    animation-timing-function: ease-out;
+}
+
+@keyframes heitto {
+    from {transform: rotate(0deg); filter: blur(2px);}
+    to {transform: rotate(360deg); filter: blur(15px);}
+}
+
+@keyframes huonoheitto {
+    from {transform: rotate(0deg); filter: blur(2px) brightness(100%);}
+    to {transform: rotate(360deg); filter: blur(20px) brightness(50%);}
+}
+
+#kahdensaannot {
+    cursor: pointer;
 }
