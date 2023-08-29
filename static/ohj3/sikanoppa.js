@@ -1,9 +1,7 @@
-// Numerot
 const lyhytpeli = 25;
 const peruspeli = 100;
 const pitkapeli = 300;
 
-// Boolit
 let pelionohi = false;
 let alkuruutu = true;
 let ekaheitto = true;
@@ -94,6 +92,11 @@ function tulostaPelaajat() {
     });
 };
 
+const noppakuva1 = document.getElementById('noppakuva1');
+const noppakuva2 = document.getElementById('noppakuva2');
+let pistedisplay = document.getElementById('pistedisplay');
+let pistejana = document.getElementById('pistejana');
+
 // Aktivoi heittonapin ja nopat, kirkastaa noppakuvat
 function aktivoiHeittonappi(isTrue) {
     if (isTrue){
@@ -183,6 +186,7 @@ function palaaAlkuruutuun() {
 
     if (!yhdennopanpeli) {
         document.getElementById('kahdensaannot').classList.add('d-none');
+        noppakuva2.classList.add('d-none');
     };
 
     pelaajat.forEach(pelaaja => {
@@ -190,24 +194,9 @@ function palaaAlkuruutuun() {
     });
 
     pistedisplay.innerHTML = 'Terve taas';
-    pistejana.innerHTML = '\u{1F3B2} ';
+    pistejana.innerHTML = '🎲 ';
     tulostaPelaajat();
 };
-
-
-const noppa_array = [
-    '../../static/images/sika/1_dot.png',
-    '../../static/images/sika/2_dots.png',
-    '../../static/images/sika/3_dots.png',
-    '../../static/images/sika/4_dots.png',
-    '../../static/images/sika/5_dots.png',
-    '../../static/images/sika/6_dots.png'
-];
-
-const noppakuva1 = document.getElementById('noppakuva1');
-const noppakuva2 = document.getElementById('noppakuva2');
-let pistedisplay = document.getElementById('pistedisplay');
-let pistejana = document.getElementById('pistejana');
 
 // Pelin valmistelu
 function yksinoppa(pituus) {
@@ -226,6 +215,15 @@ function kaksinoppaa(pituus) {
     aktivoiHeittonappi(true);
 };
 
+const noppa_array = [
+    '../../static/images/sika/1_dot.png',
+    '../../static/images/sika/2_dots.png',
+    '../../static/images/sika/3_dots.png',
+    '../../static/images/sika/4_dots.png',
+    '../../static/images/sika/5_dots.png',
+    '../../static/images/sika/6_dots.png'
+];
+
 // Nopanheitto
 let pisteet = 0;
 function yhdenNopanHeitto() {
@@ -235,6 +233,7 @@ function yhdenNopanHeitto() {
     
     // Yhden nopan pelissä ykkösestä menettää pisteet ja vuoro siirtyy seuraavalle
     if (yhdennopanpeli && luku === 1) {
+        pistejana.innerHTML += `<span style="color: darkred; font-weight: bold">1</span> = `
         huonoHeitto(kuva);
         infoFunktio('yksisilma');
     }
@@ -260,6 +259,7 @@ function kahdenNopanHeitto() {
 
     // Jos vain toinen luvuista on ykkönen, menettää pisteet ja vuoro siirtyy
     if ((luku1 === 1 && luku2 !== 1) || (luku1 !== 1 && luku2 === 1)) {
+        pistejana.innerHTML += `<span style="color: darkred; font-weight: bold">1</span> = `
         huonoHeitto(kuva1, kuva2);
         infoFunktio('yksisilma');
         return;
@@ -268,10 +268,10 @@ function kahdenNopanHeitto() {
     else if (luku1 === luku2) {
         tuplalaskuri++;
         if (tuplalaskuri === 3) {
+            pistejana.innerHTML += `<span style="color: darkred; font-weight: bold">${yhteisluku}</span> = `
             huonoHeitto(kuva1, kuva2);
+            pistedisplay.innerHTML += '💸';
             infoFunktio('triplat');
-            pistedisplay.innerHTML = 'Pisteet: \uD83D\uDCB8';
-            pistejana.innerHTML += `<span style="color: darkred; font-weight: bold">${yhteisluku}</span> + `
             return;
         };
 
@@ -316,7 +316,8 @@ function huonoHeitto(kuva1, kuva2) {
         huonoheittoAnimaatio(kuva2);
     };
     pisteet = 0;
-    pistedisplay.innerHTML = 'Pisteet: \u{1F494}';
+    pistedisplay.innerHTML = 'Pisteet: 💔';
+    pistejana.innerHTML += '💀';
     aktivoiHeittonappi(false);
 };
 
@@ -345,13 +346,13 @@ passausnappi.addEventListener('click', passaus, false);
 function passaus() {
     // Filtteröi vuorossa oleva pelaaja omaan arrayhin
     let pelaaja = pelaajat.filter(p => p.vuorossa);
-    // Lisää pisteet
+    // Lisää pisteet ja vaihda vuoro
     pelaaja[0].pisteet += pisteet;
-    // Vaihda vuoro
     pelaaja[0].vuorossa = false;
     pelaaja[0].passannut = true;
     // Filtteröi pelaajat jotka eivät olleet vielä vuorossa
     let seuraavat = pelaajat.filter(p => !p.passannut);
+
     if (seuraavat.length == 0)  {
         if (!pelionohi) {
             infoFunktio('uusikierros', pelaaja[0].nimi, pisteet, pelaajat[0].nimi);
@@ -362,6 +363,7 @@ function passaus() {
         seuraavat[0].vuorossa = true;
         infoFunktio('passaus', pelaaja[0].nimi, pisteet, seuraavat[0].nimi);
     };
+
     // Jos peli ei ole ohi, nollaa pistenäyttö
     if (pelionohi) {
         pisteet = 0;
@@ -371,7 +373,7 @@ function passaus() {
         // Nollaa pisteet
         pisteet = 0;
         pistedisplay.innerHTML = 'Pisteet: 0';
-        pistejana.innerHTML = '\u{1F3B2} ';
+        pistejana.innerHTML = '🎲 ';
     
         ekaheitto = true;
         tuplalaskuri = 0;
