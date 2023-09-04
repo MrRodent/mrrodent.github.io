@@ -13,7 +13,6 @@ let coinTimer;
 const fruits = ['cherry', 'pear', 'melon', 'apple', 'moneybag'];
 let results = [];
 
-
 let currentlyLocked = false;
 let lockBtnsDisabled = true;
 let didWin = false;
@@ -93,21 +92,21 @@ function disableLockBtns() {
   lockBtn4.setAttribute('aria-pressed', 'false');
 }
 
-function hideLockBtns() {
-  if (!lockBtn1.classList.contains('d-none')) {
-    lockBtn1.classList.add('d-none');
-    lockBtn2.classList.add('d-none');
-    lockBtn3.classList.add('d-none');
-    lockBtn4.classList.add('d-none');
-  };
-}
-
 function showLockBtns() {
   if (lockBtn1.classList.contains('d-none')) {
     lockBtn1.classList.remove('d-none');
     lockBtn2.classList.remove('d-none');
     lockBtn3.classList.remove('d-none');
     lockBtn4.classList.remove('d-none');
+  };
+}
+
+function hideLockBtns() {
+  if (!lockBtn1.classList.contains('d-none')) {
+    lockBtn1.classList.add('d-none');
+    lockBtn2.classList.add('d-none');
+    lockBtn3.classList.add('d-none');
+    lockBtn4.classList.add('d-none');
   };
 }
 
@@ -144,7 +143,7 @@ function getLockArray() {
   return [isLocked1, isLocked2, isLocked3, isLocked4];
 }
 
-/* Figures out the state of the lock buttons and switches them either on or off */
+// Figures out the state of the lock buttons and switches them either on or off
 function toggleLock(lockArray) {
   for (i = 0; i < lockArray.length; i++) {
     if (lockArray[i] === 'true')
@@ -172,8 +171,8 @@ function rollFruits(lockArray) {
   return results;
 }
 
-// Takes care of adding a delay between pressing the play button and paying the possible prizes.
-// It also assigns and prints emojis to the randomized results array.
+// Takes care of adding an animated delay between pressing the play button and paying the prizes.
+// Also assigns and prints emojis to the randomized results array.
 function animateFruits(lockArray, results) {
   let result1 = document.getElementById('result-display1');
   let result2 = document.getElementById('result-display2');
@@ -301,6 +300,7 @@ function animateFruits(lockArray, results) {
   };
 
   // This timer controls the timeLeft variable and payment of prizes
+  // The booleans are for keeping the delay equal length when locks are on.
   let overallTimer = setInterval(function() {
     if (timeLeft <= 0 || (isOverTimer1 && isOverTimer2 && isOverTimer3 && isOverTimer4)) {
       clearInterval(overallTimer);
@@ -385,8 +385,6 @@ function addCoins() {
   
   // Starting the coin inserting process
   isAddingCoins = true;
-  money++;
-  coinTxt.innerHTML = `Tienattu: ${money}€`;
   
   coinTimer = setInterval(function(){
     money++;
