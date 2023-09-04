@@ -131,11 +131,6 @@ function changeBet() {
   prizesInfo();
 }
 
-function getRandomFruit() {
-  const rndm = Math.floor(Math.random() * 5);
-  return fruits[rndm];
-}
-
 function getLockArray() {
   let isLocked1 = lockBtn1.getAttribute('aria-pressed');
   let isLocked2 = lockBtn2.getAttribute('aria-pressed');
@@ -163,6 +158,11 @@ function toggleLock(lockArray) {
   };
 }
 
+function getRandomFruit() {
+  const rndm = Math.floor(Math.random() * 5);
+  return fruits[rndm];
+}
+
 function rollFruits(lockArray) {
   for (i = 0; i < 4; i++) {
     if (lockArray[i] === 'false') {
@@ -170,181 +170,6 @@ function rollFruits(lockArray) {
     };
   };
   return results;
-}
-
-// Takes care of adding a delay between pressing the play button and paying the possible prizes.
-// It also assigns and prints emojis to the randomized results array.
-function animateFruits(lockArray, results) {
-  let result1 = document.getElementById('result-display1');
-  let result2 = document.getElementById('result-display2');
-  let result3 = document.getElementById('result-display3');
-  let result4 = document.getElementById('result-display4');
-  let prizeDisplay = document.getElementById('prize-display');
-  
-  let convert = [];
-  for (i = 0; i < results.length; i++) {
-    if (results[i] === 'cherry') {
-      convert[i] = '🍒';
-    }
-    if (results[i] === 'pear') {
-      convert[i] = '🍐';
-    }
-    if (results[i] === 'melon') {
-      convert[i] = '🍈';
-    }
-    if (results[i] === 'apple') {
-      convert[i] = '🍎';
-    }
-    else if (results[i] === 'moneybag') {
-      convert[i] = '💰';
-    };
-  };
-
-  // Disable buttons while animating
-  disablePlayBtn();
-  disableBetBtn();
-  disableLockBtns();
-  prizeDisplay.innerHTML = '. . .';
-
-  // Fruit rolling animations
-  let animArray = ['🍒', '🍐', '🍈', '🍎', '💰'];
-  let frameCount = 0;
-  let timeLeft = 28;
-  let timerMilliseconds = 100;
-
-  // Timer 1
-  let isOverTimer1 = false;
-  if (lockArray[0] === 'false') {
-    let animTimer1 = setInterval(function() {
-      if (timeLeft <= 21) {
-        clearInterval(animTimer1);
-        result1.innerHTML = convert[0];
-        isOverTimer1 = true;
-      } else {
-        result1.innerHTML = animArray[frameCount];
-        
-        if (frameCount > 3) {
-          frameCount = 0;
-        } else {
-          frameCount++;
-        };
-      }
-    }, timerMilliseconds);
-  } else {
-    isOverTimer1 = true;
-  };
-  
-  // Timer 2
-  let isOverTimer2 = false;
-  if (lockArray[1] === 'false') {
-    let animTimer2 = setInterval(function() {
-      if (timeLeft <= 14) {
-        clearInterval(animTimer2);
-        result2.innerHTML = convert[1];
-        isOverTimer2 = true;
-      } else {
-        result2.innerHTML = animArray[frameCount];
-        
-        if (frameCount > 3) {
-          frameCount = 0;
-        } else {
-          frameCount++;
-        };
-      }
-    }, timerMilliseconds);
-  } else {
-    isOverTimer2 = true;
-  };
-  
-  // Timer 3
-  let isOverTimer3 = false;
-  if (lockArray[2] === 'false') {
-    let animTimer3 = setInterval(function() {
-      if (timeLeft <= 7) {
-        clearInterval(animTimer3);
-        result3.innerHTML = convert[2];
-        isOverTimer3 = true;
-      } else {
-        result3.innerHTML = animArray[frameCount];
-        
-        if (frameCount > 3) {
-          frameCount = 0;
-        } else {
-          frameCount++;
-        };
-      }
-    }, timerMilliseconds);
-  } else {
-    isOverTimer3 = true;
-  };
-
-  // Timer 4
-  let isOverTimer4 = false;
-  if (lockArray[3] === 'false') {
-    let animTimer4 = setInterval(function() {
-      if (timeLeft <= 0) {
-        clearInterval(animTimer4);
-        result4.innerHTML = convert[3];
-        isOverTimer4 = true;
-      } else {
-        result4.innerHTML = animArray[frameCount];
-        
-        if (frameCount > 3) {
-          frameCount = 0;
-        } else {
-          frameCount++;
-        };
-      }
-    }, timerMilliseconds);
-  } else {
-    isOverTimer4 = true;
-  };
-
-  // This timer controls the timeLeft variable and payment of prizes
-  let overallTimer = setInterval(function() {
-    if (timeLeft <= 0 || (isOverTimer1 && isOverTimer2 && isOverTimer3 && isOverTimer4)) {
-      clearInterval(overallTimer);
-      // Enable buttons
-      enablePlayBtn();
-      enableBetBtn();
-      toggleLock(lockArray);
-
-      // Pay prizes
-      let prize = payPrizes(results);
-      updatePrizeTxt(prize);
-    } else {
-      timeLeft -= 1;
-    }
-  }, timerMilliseconds);
-}
-
-function updatePrizeTxt(prize) {
-  let prizeDisplay = document.getElementById('prize-display');
-
-  if (didWin) {
-    didWin = false;
-    money += prize;
-    prizeDisplay.innerHTML = `Voitit ${prize}€ !`;
-    updateMoneyTxt();
-  } else {
-    prizeDisplay.innerHTML = 'Ei voittoa';
-  };
-
-  if (money < bet) {
-    disablePlayBtn();
-  };
-
-  if (money <= 0) {
-    money = 0;
-    disablePlayBtn();
-    prizeDisplay.innerHTML = 'Rahat loppu!';
-    outOfMoney();
-  };
-}
-
-function updateMoneyTxt() {
-  let moneyTxt = document.getElementById('money-txt');
-  moneyTxt.innerHTML = `Rahaa: ${money}€`;
 }
 
 function outOfMoney() {
@@ -400,7 +225,7 @@ function addCoins() {
   
 }
 
-function payPrizes(results) {
+function determinePrizes(results) {
   const isIdentical = results.every((fruit) => fruit === results[0]);
   let prize = 0;
   
@@ -440,6 +265,186 @@ function payPrizes(results) {
   return prize;
 }
 
+function payPrizes(prize) {
+  let prizeDisplay = document.getElementById('prize-display');
+
+  if (didWin) {
+    didWin = false;
+    money += prize;
+    prizeDisplay.innerHTML = `Voitit ${prize}€ !`;
+    updateMoneyTxt();
+  } else {
+    prizeDisplay.innerHTML = 'Ei voittoa';
+  };
+
+  if (money < bet) {
+    disablePlayBtn();
+  };
+
+  if (money <= 0) {
+    money = 0;
+    disablePlayBtn();
+    prizeDisplay.innerHTML = 'Rahat loppu!';
+    outOfMoney();
+  };
+}
+
+function updateMoneyTxt() {
+  let moneyTxt = document.getElementById('money-txt');
+  moneyTxt.innerHTML = `Rahaa: ${money}€`;
+}
+
+function convertToEmojis(results) {
+  let conversion = [];
+  for (i = 0; i < results.length; i++) {
+    if (results[i] === 'cherry') {
+      conversion[i] = '🍒';
+    }
+    if (results[i] === 'pear') {
+      conversion[i] = '🍐';
+    }
+    if (results[i] === 'melon') {
+      conversion[i] = '🍈';
+    }
+    if (results[i] === 'apple') {
+      conversion[i] = '🍎';
+    }
+    else if (results[i] === 'moneybag') {
+      conversion[i] = '💰';
+    };
+  };
+  return conversion;
+}
+
+// Takes care of adding a delay between pressing the play button and paying the possible prizes.
+// It also assigns and prints emojis to the randomized results array.
+function animateFruits(lockArray, results) {
+  let result1 = document.getElementById('result-display1');
+  let result2 = document.getElementById('result-display2');
+  let result3 = document.getElementById('result-display3');
+  let result4 = document.getElementById('result-display4');
+  let prizeDisplay = document.getElementById('prize-display');
+
+  let convertedResults = convertToEmojis(results);
+
+  // Disable buttons while animating
+  disablePlayBtn();
+  disableBetBtn();
+  disableLockBtns();
+  prizeDisplay.innerHTML = '. . .';
+
+  // Fruit rolling animations
+  let animArray = ['🍒', '🍐', '🍈', '🍎', '💰'];
+  let frameCount = 0;
+  let timeLeft = 28;
+  let timerMilliseconds = 100;
+
+  // Timer 1
+  let isOverTimer1 = false;
+  if (lockArray[0] === 'false') {
+    let animTimer1 = setInterval(function() {
+      if (timeLeft <= 21) {
+        clearInterval(animTimer1);
+        result1.innerHTML = convertedResults[0];
+        isOverTimer1 = true;
+      } else {
+        result1.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer1 = true;
+  };
+  
+  // Timer 2
+  let isOverTimer2 = false;
+  if (lockArray[1] === 'false') {
+    let animTimer2 = setInterval(function() {
+      if (timeLeft <= 14) {
+        clearInterval(animTimer2);
+        result2.innerHTML = convertedResults[1];
+        isOverTimer2 = true;
+      } else {
+        result2.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer2 = true;
+  };
+  
+  // Timer 3
+  let isOverTimer3 = false;
+  if (lockArray[2] === 'false') {
+    let animTimer3 = setInterval(function() {
+      if (timeLeft <= 7) {
+        clearInterval(animTimer3);
+        result3.innerHTML = convertedResults[2];
+        isOverTimer3 = true;
+      } else {
+        result3.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer3 = true;
+  };
+
+  // Timer 4
+  let isOverTimer4 = false;
+  if (lockArray[3] === 'false') {
+    let animTimer4 = setInterval(function() {
+      if (timeLeft <= 0) {
+        clearInterval(animTimer4);
+        result4.innerHTML = convertedResults[3];
+        isOverTimer4 = true;
+      } else {
+        result4.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer4 = true;
+  };
+
+  // This timer controls the timeLeft variable and payment of prizes
+  let overallTimer = setInterval(function() {
+    if (timeLeft <= 0 || (isOverTimer1 && isOverTimer2 && isOverTimer3 && isOverTimer4)) {
+      clearInterval(overallTimer);
+      // Enable buttons
+      enablePlayBtn();
+      enableBetBtn();
+      toggleLock(lockArray);
+
+      // Pay prizes
+      let prize = determinePrizes(results);
+      payPrizes(prize);
+    } else {
+      timeLeft -= 1;
+    }
+  }, timerMilliseconds);
+}
+
 function play() {
   money -= bet;
   updateMoneyTxt();
@@ -466,24 +471,19 @@ function prizesInfo() {
 // Debug functions
 function voita() {
   results = ['cherry', 'cherry', 'cherry', 'cherry']
-  animateFruits(results);
-  
-  let prize = payPrizes(results);
-  updatePrizeTxt(prize);
+  let lockArray = getLockArray();
+  animateFruits(lockArray, results);
 }
 
 function voita2() {
   results = ['moneybag', 'cherry', 'moneybag', 'moneybag']
-  payPrizes(results);
-  animateFruits(results);
-
-  let prize = payPrizes(results);
-  updatePrizeTxt(prize);
+  let lockArray = getLockArray();
+  animateFruits(lockArray, results);
 }
 
 function vararikko() {
   money = 0;
-  updatePrizeTxt();
+  payPrizes();
 }
 
 // Print prizes on launch
