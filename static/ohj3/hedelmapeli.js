@@ -34,13 +34,81 @@ coinBtn.addEventListener('click', addCoins, false);
 function enablePlayBtn() {
   if (playBtn.classList.contains('disabled')) {
     playBtn.classList.remove('disabled');
-  }
+  };
 }
 
 function disablePlayBtn() {
   if (!playBtn.classList.contains('disabled')) {
     playBtn.classList.add('disabled');
-  }
+  };
+}
+
+function enableBetBtn() {
+  if (betBtn.classList.contains('disabled')) {
+    betBtn.classList.remove('disabled');
+  };
+}
+
+function disableBetBtn() {
+  if (!betBtn.classList.contains('disabled')) {
+    betBtn.classList.add('disabled');
+  };
+}
+
+function enableLockBtns() {
+  lockBtnsDisabled = false;
+
+  lockBtn1.classList.remove('disabled');
+  lockBtn2.classList.remove('disabled');
+  lockBtn3.classList.remove('disabled');
+  lockBtn4.classList.remove('disabled');
+
+  lockBtn1.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+  lockBtn2.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+  lockBtn3.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+  lockBtn4.classList.replace('btn-outline-secondary', 'btn-outline-primary');
+}
+
+function disableLockBtns() {
+  lockBtnsDisabled = true;
+
+  lockBtn1.classList.add('disabled');
+  lockBtn2.classList.add('disabled');
+  lockBtn3.classList.add('disabled');
+  lockBtn4.classList.add('disabled');
+  
+  lockBtn1.classList.remove('active');
+  lockBtn2.classList.remove('active');
+  lockBtn3.classList.remove('active');
+  lockBtn4.classList.remove('active');
+
+  lockBtn1.classList.replace('btn-outline-primary', 'btn-outline-secondary');
+  lockBtn2.classList.replace('btn-outline-primary', 'btn-outline-secondary');
+  lockBtn3.classList.replace('btn-outline-primary', 'btn-outline-secondary');
+  lockBtn4.classList.replace('btn-outline-primary', 'btn-outline-secondary');
+  
+  lockBtn1.setAttribute('aria-pressed', 'false');
+  lockBtn2.setAttribute('aria-pressed', 'false');
+  lockBtn3.setAttribute('aria-pressed', 'false');
+  lockBtn4.setAttribute('aria-pressed', 'false');
+}
+
+function hideLockBtns() {
+  if (!lockBtn1.classList.contains('d-none')) {
+    lockBtn1.classList.add('d-none');
+    lockBtn2.classList.add('d-none');
+    lockBtn3.classList.add('d-none');
+    lockBtn4.classList.add('d-none');
+  };
+}
+
+function showLockBtns() {
+  if (lockBtn1.classList.contains('d-none')) {
+    lockBtn1.classList.remove('d-none');
+    lockBtn2.classList.remove('d-none');
+    lockBtn3.classList.remove('d-none');
+    lockBtn4.classList.remove('d-none');
+  };
 }
 
 function changeBet() {
@@ -58,7 +126,7 @@ function changeBet() {
   }
   else if (bet <= money) {
     enablePlayBtn();
-  }
+  };
 
   prizesInfo();
 }
@@ -86,32 +154,12 @@ function toggleLock(lockArray) {
   };
 
   if (lockBtnsDisabled) {
-    lockBtnsDisabled = false;
-
-    lockBtn1.classList.remove('disabled');
-    lockBtn2.classList.remove('disabled');
-    lockBtn3.classList.remove('disabled');
-    lockBtn4.classList.remove('disabled');
+    enableLockBtns();
   };
 
   if (currentlyLocked) {
-    lockBtnsDisabled = true;
     currentlyLocked = false;
-
-    lockBtn1.classList.add('disabled');
-    lockBtn2.classList.add('disabled');
-    lockBtn3.classList.add('disabled');
-    lockBtn4.classList.add('disabled');
-    
-    lockBtn1.classList.remove('active');
-    lockBtn2.classList.remove('active');
-    lockBtn3.classList.remove('active');
-    lockBtn4.classList.remove('active');
-    
-    lockBtn1.setAttribute('aria-pressed', 'false');
-    lockBtn2.setAttribute('aria-pressed', 'false');
-    lockBtn3.setAttribute('aria-pressed', 'false');
-    lockBtn4.setAttribute('aria-pressed', 'false');
+    disableLockBtns();
   };
 }
 
@@ -124,13 +172,16 @@ function rollFruits(lockArray) {
   return results;
 }
 
-function printFruits(results) {
+// Takes care of adding a delay between pressing the play button and paying the possible prizes.
+// It also assigns and prints emojis to the randomized results array.
+function animateFruits(lockArray, results) {
   let result1 = document.getElementById('result-display1');
   let result2 = document.getElementById('result-display2');
   let result3 = document.getElementById('result-display3');
   let result4 = document.getElementById('result-display4');
+  let prizeDisplay = document.getElementById('prize-display');
+  
   let convert = [];
-
   for (i = 0; i < results.length; i++) {
     if (results[i] === 'cherry') {
       convert[i] = '🍒';
@@ -149,22 +200,132 @@ function printFruits(results) {
     };
   };
 
-  result1.innerHTML = convert[0];
-  result2.innerHTML = convert[1];
-  result3.innerHTML = convert[2];
-  result4.innerHTML = convert[3];
+  // Disable buttons while animating
+  disablePlayBtn();
+  disableBetBtn();
+  disableLockBtns();
+  prizeDisplay.innerHTML = '. . .';
+
+  // Fruit rolling animations
+  let animArray = ['🍒', '🍐', '🍈', '🍎', '💰'];
+  let frameCount = 0;
+  let timeLeft = 28;
+  let timerMilliseconds = 100;
+
+  // Timer 1
+  let isOverTimer1 = false;
+  if (lockArray[0] === 'false') {
+    let animTimer1 = setInterval(function() {
+      if (timeLeft <= 21) {
+        clearInterval(animTimer1);
+        result1.innerHTML = convert[0];
+        isOverTimer1 = true;
+      } else {
+        result1.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer1 = true;
+  };
+  
+  // Timer 2
+  let isOverTimer2 = false;
+  if (lockArray[1] === 'false') {
+    let animTimer2 = setInterval(function() {
+      if (timeLeft <= 14) {
+        clearInterval(animTimer2);
+        result2.innerHTML = convert[1];
+        isOverTimer2 = true;
+      } else {
+        result2.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer2 = true;
+  };
+  
+  // Timer 3
+  let isOverTimer3 = false;
+  if (lockArray[2] === 'false') {
+    let animTimer3 = setInterval(function() {
+      if (timeLeft <= 7) {
+        clearInterval(animTimer3);
+        result3.innerHTML = convert[2];
+        isOverTimer3 = true;
+      } else {
+        result3.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer3 = true;
+  };
+
+  // Timer 4
+  let isOverTimer4 = false;
+  if (lockArray[3] === 'false') {
+    let animTimer4 = setInterval(function() {
+      if (timeLeft <= 0) {
+        clearInterval(animTimer4);
+        result4.innerHTML = convert[3];
+        isOverTimer4 = true;
+      } else {
+        result4.innerHTML = animArray[frameCount];
+        
+        if (frameCount > 3) {
+          frameCount = 0;
+        } else {
+          frameCount++;
+        };
+      }
+    }, timerMilliseconds);
+  } else {
+    isOverTimer4 = true;
+  };
+
+  // This timer controls the timeLeft variable and payment of prizes
+  let overallTimer = setInterval(function() {
+    if (timeLeft <= 0 || (isOverTimer1 && isOverTimer2 && isOverTimer3 && isOverTimer4)) {
+      clearInterval(overallTimer);
+      // Enable buttons
+      enablePlayBtn();
+      enableBetBtn();
+      toggleLock(lockArray);
+
+      // Pay prizes
+      let prize = payPrizes(results);
+      updatePrizeTxt(prize);
+    } else {
+      timeLeft -= 1;
+    }
+  }, timerMilliseconds);
 }
 
-function updateMoney(prize) {
-  let moneyTxt = document.getElementById('money-txt');
+function updatePrizeTxt(prize) {
   let prizeDisplay = document.getElementById('prize-display');
 
-  money -= bet;
-
   if (didWin) {
+    didWin = false;
     money += prize;
     prizeDisplay.innerHTML = `Voitit ${prize}€ !`;
-    didWin = false;
+    updateMoneyTxt();
   } else {
     prizeDisplay.innerHTML = 'Ei voittoa';
   };
@@ -179,22 +340,25 @@ function updateMoney(prize) {
     prizeDisplay.innerHTML = 'Rahat loppu!';
     outOfMoney();
   };
+}
 
+function updateMoneyTxt() {
+  let moneyTxt = document.getElementById('money-txt');
   moneyTxt.innerHTML = `Rahaa: ${money}€`;
 }
 
 function outOfMoney() {
-  let fruitScreen = document.getElementById('fruit-screen');
-  fruitScreen.classList.add('d-none');
   let coinScreen = document.getElementById('insert-coin-screen');
   coinScreen.classList.remove('d-none');
 
-  betBtn.classList.add('disabled');
+  disableBetBtn();
+  hideLockBtns();
 }
 
 let isAddingCoins = false;
 function addCoins() {
   let moneyTxt = document.getElementById('money-txt');
+  let coinTxt = document.getElementById('coin-txt');
   let prizeDisplay = document.getElementById('prize-display');
 
   // Clicking the button again stops inserting coins and brings back the game screen
@@ -205,32 +369,38 @@ function addCoins() {
     coinScreen.classList.add('d-none');
 
     enablePlayBtn();
-    betBtn.classList.remove('disabled');
+    enableBetBtn();
+    showLockBtns();
+    disableLockBtns();
 
     clearInterval(coinTimer);
 
     prizeDisplay.innerHTML = 'Tervetuloa takaisin';
+    coinTxt.innerHTML = '. . .';
     moneyTxt.style.cssText = '';
     coinBtn.innerHTML = 'Mee töihin';
     isAddingCoins = false;
     return;
   };
-
+  
   // Starting the coin inserting process
   isAddingCoins = true;
+  money++;
+  coinTxt.innerHTML = `Tienattu: ${money}€`;
   
   coinTimer = setInterval(function(){
     money++;
+    coinTxt.innerHTML = `Tienattu: ${money}€`;
     moneyTxt.innerHTML = `Rahaa: ${money}€`;
-  }, 800);
+  }, 1000);
   
-  moneyTxt.style.cssText = 'color: green';
-  prizeDisplay.innerHTML = 'Paiskitaan hommia..';
   coinBtn.innerHTML = 'Takaisin pelaamaan';
+  moneyTxt.style.cssText = 'color: green; font-weight: bold;';
+  prizeDisplay.innerHTML = 'Paiskitaan hommia..';
   
 }
 
-function checkWinnings(results) {
+function payPrizes(results) {
   const isIdentical = results.every((fruit) => fruit === results[0]);
   let prize = 0;
   
@@ -262,19 +432,23 @@ function checkWinnings(results) {
     }
   };
 
-  prize > 0 ? didWin = true : false;
+  if (prize > 0) {
+    didWin = true;
+    disableLockBtns();
+  };
+
   return prize;
 }
 
 function play() {
+  money -= bet;
+  updateMoneyTxt();
+
   let lockArray = getLockArray();
   toggleLock(lockArray);
 
   results = rollFruits(lockArray);
-  printFruits(results);
-  
-  let prize = checkWinnings(results);
-  updateMoney(prize);
+  animateFruits(lockArray, results);
 }
 
 function prizesInfo() {
@@ -289,25 +463,28 @@ function prizesInfo() {
   `;
 }
 
-function startGame() {
-  prizesInfo();
-}
-// Debug
-startGame();
-
+// Debug functions
 function voita() {
   results = ['cherry', 'cherry', 'cherry', 'cherry']
-  printFruits(results);
+  animateFruits(results);
   
-  let prize = checkWinnings(results);
-  updateMoney(prize);
+  let prize = payPrizes(results);
+  updatePrizeTxt(prize);
 }
 
 function voita2() {
   results = ['moneybag', 'cherry', 'moneybag', 'moneybag']
-  checkWinnings(results);
-  printFruits(results);
+  payPrizes(results);
+  animateFruits(results);
 
-  let prize = checkWinnings(results);
-  updateMoney(prize);
+  let prize = payPrizes(results);
+  updatePrizeTxt(prize);
 }
+
+function vararikko() {
+  money = 0;
+  updatePrizeTxt();
+}
+
+// Print prizes on launch
+prizesInfo();
