@@ -1,14 +1,16 @@
 import { ctx, tileSize, game, globalPause, bigBomb } from "./main.js";
-import { getMusicalTimeout, msPerBeat, playAudio, playTrack, randomSfx, riserPlaying, sfxs, tracks } from "./audio.js";
+import { getMusicalTimeout, msPerBeat, playAudio, playRiser, playTrack, randomSfx, riserPlaying, sfxs, tracks } from "./audio.js";
 import { spawnEnemiesAtLocation, enemies } from "./enemy.js";
 import { getDistanceTo, getLinearUntilObstacle } from "./utils.js";
 import { findPlayerById, players } from "./player.js";
 import { exitLocation } from "./tile.js";
 import { spriteSheets } from "./spritesheets.js";
+import { lastLevel } from "./gamestate.js";
 
 export let tilesWithBombs = [];
 let crumblingWalls = [];
 let fieryFloors = [];
+let bombAudioPlaying = false;
 
 export class Bomb {
     constructor(x, y, range, playerId) {
@@ -31,6 +33,9 @@ export class Bomb {
         
         this.ticking = setInterval(() => {
             if (globalPause) return;
+
+            this.checkFirstBomb();
+
             this.currentFrame++;
             if (this.hasExploded) {
                 clearInterval(this.ticking);
@@ -46,9 +51,15 @@ export class Bomb {
                 } else {
                     delay = getMusicalTimeout();
                     // The extra delay is for more dramatic drop.
-                    // TODO: selvitä milloin *2 ja milloin *4, varmaan jos delay yli/ali jonkun?
-                    // koita saada aina samaksi.
-                    delay += msPerBeat * 2;
+                    if (delay < msPerBeat) {
+                        delay += msPerBeat * 4;
+                    } else {
+                        delay += msPerBeat * 2;
+                    }
+                }
+                
+                if (game.level != 1 && !game.beatDropped && !lastLevel) {
+                    playTrack(tracks['GHOSTS_HEART']);
                 }
 
                 setTimeout(() => {
@@ -74,6 +85,16 @@ export class Bomb {
             }
         }, 150);
     }
+
+    checkFirstBomb() {
+        if (game.firstBombDropped) return;
+
+        game.firstBombDropped = true;
+        if (game.level > 1) {
+            bigBomb.playLightUp();
+            playRiser();
+        }
+    }
 }
 
 
@@ -84,10 +105,15 @@ function explode(bomb) {
             bigBomb.playShatter();
         }
     }
-    // game.checkGameState();
 
     const randomBomb = randomSfx(sfxs['BOMBS']);
-    playAudio(randomBomb);
+    if (!bombAudioPlaying) {
+        let audio = playAudio(randomBomb);
+        bombAudioPlaying = true;
+        audio.onended = function() {
+            bombAudioPlaying = false;
+        }
+    }
 
     let tiles = getLinearUntilObstacle(bomb, bomb.range, true, true);
     let centerTile = tiles[0][0];
