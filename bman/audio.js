@@ -15,19 +15,21 @@ let beatsInSong = undefined;
 export let tracks = {};
 export let sfxs = {};
 const TrackURLs = {
-    BEAT: "assets/music/song_heartbeat.mp3",
+    HEART: "assets/music/song_heartbeat.mp3",
+    SLOWHEART: "assets/music/song_heartbeat_slow.mp3",
+    HEART_DRONES: "assets/music/song_beat_drones.mp3",
     KICK: "assets/music/song_kick.mp3",
-    KICK_DRONES: "assets/music/song_kick_drones.mp3",
     DOUBLEKICKS: "assets/music/song_doublekicks.mp3",
+    KICK_DRONES: "assets/music/song_kick_drones.mp3",
     GHOSTS: "assets/music/song_ghosts.mp3",
     GHOSTS_HEART: "assets/music/song_ghosts_heart.mp3",
     INT1: "assets/music/song_intensity01.mp3",
     INT2: "assets/music/song_intensity02.mp3",
     INT3: "assets/music/song_intensity03.mp3",
-    BIRDS: "assets/music/dawn-chorus-birdsong.mp3",
 }
 
 const SfxURLs = {
+    BIRDS: "assets/music/dawn-chorus-birdsong.mp3",
     ZOMBIES: ["assets/sfx/zombie01.mp3", "assets/sfx/zombie02.mp3", "assets/sfx/zombie03.mp3", "assets/sfx/zombie04.mp3", "assets/sfx/zombie05.mp3"],
     GHOSTS: ["assets/sfx/ghost01.mp3", "assets/sfx/ghost02.mp3", "assets/sfx/ghost03.mp3", "assets/sfx/ghost04.mp3", "assets/sfx/ghost05.mp3"],
     LAUGHS: ["assets/sfx/laugh01.mp3", "assets/sfx/laugh02.mp3", "assets/sfx/laugh03.mp3", "assets/sfx/laugh04.mp3", "assets/sfx/laugh05.mp3"],
@@ -93,14 +95,15 @@ export async function loadAudioFiles() {
 }
 
 
+let startTime = 0;
+let currentTrack = null;
+
 export function getOffset() {
-    let elapsedTime = audioCtx.currentTime - startTime;
+    let elapsedTime = audioCtx.currentTime;
     let offset = elapsedTime % songDuration;
     return offset;
 }
 
-let startTime = 0;
-let currentTrack = null;
 export function playTrack(audioBuffer) {
     const trackSource = new AudioBufferSourceNode(audioCtx, {
         buffer: audioBuffer,
@@ -108,30 +111,33 @@ export function playTrack(audioBuffer) {
     trackSource.loop = true;
     trackSource.connect(audioCtx.destination);
 
+    let offset = getOffset();
+
     if (currentTrack !== null) {
+        currentTrack.disconnect();
         currentTrack.stop();
     }
 
-    let offset = getOffset();
-
-    trackSource.start(0, offset);
+    // Start the new track from the same position as the old track
+    trackSource.start(0, offset % audioBuffer.duration);
 
     currentTrack = trackSource;
-    // Update start time considering the offset
-    startTime = audioCtx.currentTime - offset;
+    // Update start time
+    startTime = audioCtx.currentTime;
 
     return trackSource;
 }
 
-// TODO: ei ehkä
-let trackPlaying;
-export function changeTrack(newTrack) {
-    trackPlaying.ontimeupdate = function() {
-        if (this.currentTime >= this.duration - 0.2) { // 0.2 is a buffer to account for rounding errors
-            playTrack(tracks[newTrack]);
-        }
-    };
+
+export function stopCurrentTrack() {
+    if (currentTrack !== null) {
+        currentTrack.disconnect();
+        currentTrack.stop();
+        currentTrack = null;
+    }
 }
+
+
 
 // Syncs the footsteps with the track
 let footsteps = null;
@@ -160,7 +166,36 @@ export function playFootsteps(isWalking) {
 export function stopFootsteps() {
     if (footsteps !== null) {
         footsteps.stop();
-        footsteps = null; // Reset footsteps to null
+        footsteps = null;
+    }
+}
+
+// Play birdsong
+let birdsong = null;
+export function playBirdsong() {
+    const audioBuffer = sfxs['BIRDS'];
+    const audioSource = new AudioBufferSourceNode(audioCtx, {
+        buffer: audioBuffer,
+    });
+    audioSource.loop = true;
+    audioSource.connect(audioCtx.destination);
+    
+    if (birdsong !== null) {
+        birdsong.stop();
+    }
+
+    let offset = getOffset();
+    
+    audioSource.start(0, offset);
+
+    birdsong = audioSource;
+    startTime = audioCtx.currentTime - offset;
+}
+
+export function stopBirdsong() {
+    if (birdsong !== null) {
+        birdsong.stop();
+        birdsong = null;
     }
 }
 
@@ -214,5 +249,6 @@ export function playRiser() {
     let audio = playAudio(sfxs['RISER']);
     audio.onended = function() {
         riserPlaying = false;
+        playTrack(tracks['GHOSTS_HEART']);
     };
 }

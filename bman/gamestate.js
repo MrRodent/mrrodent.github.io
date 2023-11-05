@@ -1,4 +1,4 @@
-import { playTrack, loadAudioFiles, tracks, changeTrack } from "./audio.js";
+import { playTrack, loadAudioFiles, tracks, playBirdsong, stopBirdsong } from "./audio.js";
 import { clearBombs } from "./bomb.js";
 import { setCameraX } from "./camera.js";
 import { clearEnemies, enemies, spawnEnemies } from "./enemy.js";
@@ -86,24 +86,27 @@ export class Game {
         if (this.level === 1) {
             tutorial.playAnimation();
             bigBomb.visible = false;
-        }
-        if (this.level > 1) {
+            playBirdsong();
+        } else {
             if (tutorial.visible) {
                 tutorial.visible = false;
             }
             bigBomb.visible = true;         
         }
+
         if (this.level >= levels.length - 1) {
             lastLevel = true;
         } else lastLevel = false;
         
         // Set the music
         this.beatDropped = false;
-        if (this.level === 1) {
-            playTrack(tracks['BIRDS']);
-        }
-        else if (lastLevel) {
-            playTrack(tracks['BEAT']);
+        const previousLevel = this.level - 1;
+        
+        if (lastLevel) {
+            playTrack(tracks['HEART']);
+        } 
+        else if (this.level === 1 || previousLevel === 1) {
+            // Do nothing
         } else {
             playTrack(tracks['INT1']);
         }
@@ -170,6 +173,10 @@ export class Game {
         fadeTransition.fadeIn();
         
         this.level++;
+        if (this.level === 2) {
+            stopBirdsong();
+        }
+
         this.newLevel();
         this.initLevel();
         updateLevelDisplay(this.level);
@@ -212,12 +219,13 @@ export class Game {
         // Open the door
         if (this.numOfEnemies === 0 && exitLocation.isOpen === false) {
             this.toggleDoor();
-
-            if (this.level === 1) {
-                playTrack(tracks['KICK_DRONES']);
+        
+            if (this.level != 1) {
+                playTrack(tracks['INT1']);            
             } else {
-                playTrack(tracks['INT1']);                
+                playTrack(tracks['KICK_DRONES']);
             }
+
         }
         else if (this.numOfEnemies <= 3 && this.level > 2) {
             playTrack(tracks['INT3']);
@@ -226,7 +234,7 @@ export class Game {
 
     over() {
         gameOverText.playAnimation().then(() => {
-            playTrack(tracks['BEAT']);
+            playTrack(tracks['HEART']);
             localStorage.clear();
             showGameOverMenu();
             this.level = 1;

@@ -5,12 +5,10 @@ import { getDistanceTo, getLinearUntilObstacle } from "./utils.js";
 import { findPlayerById, players } from "./player.js";
 import { exitLocation } from "./tile.js";
 import { spriteSheets } from "./spritesheets.js";
-import { lastLevel } from "./gamestate.js";
 
 export let tilesWithBombs = [];
 let crumblingWalls = [];
 let fieryFloors = [];
-let bombAudioPlaying = false;
 
 export class Bomb {
     constructor(x, y, range, playerId) {
@@ -58,9 +56,6 @@ export class Bomb {
                     }
                 }
                 
-                if (game.level != 1 && !game.beatDropped && !lastLevel) {
-                    playTrack(tracks['GHOSTS_HEART']);
-                }
 
                 setTimeout(() => {
                     // The riser will be playing when waiting for the first bomb.
@@ -72,9 +67,11 @@ export class Bomb {
                         explode(this);
                     }
 
-                    if (!game.beatDropped && game.level != 1) {
+                    if (!game.beatDropped) {
                         setTimeout(() => {
-                            playTrack(tracks['INT2']);
+                            if (game.level !== 1) {
+                                playTrack(tracks['INT2']);
+                            }
                         }, msPerBeat);
                         game.beatDropped = true;
                     }
@@ -107,13 +104,7 @@ function explode(bomb) {
     }
 
     const randomBomb = randomSfx(sfxs['BOMBS']);
-    if (!bombAudioPlaying) {
-        let audio = playAudio(randomBomb);
-        bombAudioPlaying = true;
-        audio.onended = function() {
-            bombAudioPlaying = false;
-        }
-    }
+    playAudio(randomBomb);
 
     let tiles = getLinearUntilObstacle(bomb, bomb.range, true, true);
     let centerTile = tiles[0][0];
