@@ -183,6 +183,7 @@ export class pollCard {
       event.preventDefault();
       const selectedChoice = document.querySelector(`input[name=${this.pollName}]:checked`);
       this.vote(selectedChoice);
+      this.justVoted = true;
       this.showResults(resultBtn, voteBtn);
     })
   }
@@ -199,16 +200,6 @@ export class pollCard {
         result.voteCounts[index]++;
         let pollJson = JSON.stringify(polls);
         localStorage.setItem('polls', pollJson);
-
-        // Save user
-        let users = getUsers();
-        users.forEach(user => {
-          if (user.id === currentlyLoggedUser) {
-            user.pollsVoted.push(this.id);
-          }
-        });
-        let userJson = JSON.stringify(users);
-        localStorage.setItem('users', userJson);
     }
 
     getPercentage(voteCount) {
