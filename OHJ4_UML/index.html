@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fi" data-bs-theme="dark">
+
+<head>
+  <title>Äänestys</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS v5.3.2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header>
+    <!-- Navigaatio -->
+    <nav class="navbar navbar-expand-sm navbar-light bg-body-tertiary">
+        <div class="container space-between">
+          <a class="navbar-brand" href="index.html">Äänestys</a>
+          <ul class="navbar-nav me-auto mt-2 mt-lg-0">
+            <!-- Dropdown -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Valikko</a>
+              <div class="dropdown-menu" aria-labelledby="dropdownId">
+                <a class="dropdown-item login-link" href="#">Kirjaudu</a>
+                <a class="dropdown-item register-link" href="#">Rekisteröidy</a>
+                <a class="dropdown-item open-poll-creation d-sm-none invisible" href="#" data-bs-toggle="modal" data-bs-target="#poll-creation">Luo äänestys</a>
+              </div>
+            </li>
+          </ul>
+          <button type="button" class="btn me-4 btn-outline-info open-poll-creation d-none d-sm-block invisible" data-bs-toggle="modal" data-bs-target="#poll-creation">Luo äänestys</button>
+          <div class="text-end">
+            <p id="nav-left-id"class="navbar-nav" href="#"></p>
+            <a id="nav-left-login-link" class="navbar-nav login-link d-none d-sm-block" href="#">Kirjaudu</a>
+          </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Register -->
+    <div id="registrationForm" class="container mt-5 rounded-2 col-lg-6 col-xxl-4 bg-body-tertiary invisible">
+      <div class="float-end p-2 mt-1">
+        <button id="regCloseBtn" type="button" class="btn-close" aria-label="Close"></button>
+      </div>
+      <div class="p-5">
+        <h2>Rekisteröidy</h2>
+        <p id="ohje" class="text-secondary small">Oletko jo rekisteröitynyt?<br>Kirjaudu sisään <a id="login-link-form" class="login-link" href="#">tästä</a></p>
+        
+        <div class="col-md-6 mb-3 form-floating">
+          <input id="regInputID" type="text" class="form-control">
+          <label for="regInputID" class="form-label">Käyttäjätunnus</label>
+          <p class="invalid-feedback" id="regErrorMsgID">Minimipituus 3 merkkiä.</p>
+        </div>
+  
+        <div class="col-md-6 mb-2 form-floating">
+          <input type="password" class="form-control" id="regInputPw">
+          <label for="regInputPw" class="form-label">Salasana</label>
+          <p class="invalid-feedback" id="regErrorMsgPw"></p>
+        </div>
+  
+        <div class="col-md-6 mb-2">
+          <input type="checkbox" class="form-check-inline" id="checkAdmin">
+          <label for="checkAdmin" class="form-label">Tee käyttäjästä ylläpitäjä</label>
+        </div>
+  
+        <div class="col-12 text-end">
+          <button id="registrationBtn" type="button" class="btn btn-outline-light">Luo tunnus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div id="loginForm" class="container mt-5 rounded-2 col-lg-6 col-xxl-4 bg-body-tertiary invisible">
+      <div class="float-end p-2 mt-1">
+        <button id="loginCloseBtn" type="button" class="btn-close" aria-label="Close"></button>
+      </div>
+      <div class="p-5">
+        <h2>Kirjaudu sisään</h2>
+        <p id="ohje" class="text-secondary small">Eikö sinulla ole vielä käyttäjätunnusta?<br>Luo se <a class="register-link" href="#">tästä</a></p>
+        
+        <div class="col-md-6 mb-3 form-floating">
+          <input id="loginInputID" type="text" class="form-control">
+          <label for="loginInputID" class="form-label">Käyttäjätunnus</label>
+          <p class="invalid-feedback" id="loginErrorMsgID"></p>
+        </div>
+  
+        <div class="col-md-6 mb-2 form-floating">
+          <input type="password" class="form-control" id="loginInputPw">
+          <label for="loginInputPw" class="form-label">Salasana</label>
+          <p class="invalid-feedback" id="loginErrorMsgPw"></p>
+        </div>
+  
+        <div class="col-12 text-end">
+          <button id="loginBtn" type="button" class="btn btn-outline-light">Kirjaudu sisään</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong id="toastHeader" class="me-auto text-success-emphasis">...</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div id="toastMsg" class="toast-body">
+          ...
+        </div>
+      </div>
+    </div>
+    
+    <!-- Poll container -->
+    <div class="container mt-4">
+      <div id="poll-container" class="row row-cols-1 row-cols-md-2 row-cols-xxl-3"></div>  
+    </div>
+
+    <!-- Poll creation modal -->
+    <div class="modal fade" id="poll-creation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="poll-creationLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="poll-creationLabel">Uusi äänestys</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body">
+            <div class="row mb-2">
+              <div class="row mb-2">
+                <label for="new-poll-header" class="col-sm-2 col-form-label">Otsikko</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control new-poll-input required-poll-input" id="new-poll-header" placeholder="Äänestyksen aihe">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <label for="new-poll-description" class="col-sm-2 col-form-label">Kuvaus</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control new-poll-input required-poll-input" id="new-poll-description" placeholder="Mitä haluat kysyä?">
+                </div>
+              </div>
+              
+              <!-- Choices -->
+              <div class="row mb-1">
+                <label for="new-poll-option1" class="col-sm-2 col-form-label col-form-label">Vaihtoehdot</label>
+                <p class="text-info small fst-italic">Anna vähintään kaksi äänestysvaihtoehtoa.</p>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control form-control-sm new-poll-input new-poll-option required-poll-input" id="new-poll-option1" placeholder="Vaihtoehto 1">
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col-sm-10">
+                  <input type="text" class="form-control form-control-sm new-poll-input new-poll-option required-poll-input" id="new-poll-option2" placeholder="Vaihtoehto 2">
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col-sm-10">
+                  <input type="text" class="form-control form-control-sm new-poll-input new-poll-option" id="new-poll-option3" placeholder="Vaihtoehto 3">
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col-sm-10">
+                  <input type="text" class="form-control form-control-sm new-poll-input new-poll-option" id="new-poll-option4" placeholder="Vaihtoehto 4">
+                </div>
+              </div>
+              <div class="row mb-1">
+                <div class="col-sm-10">
+                  <input type="text" class="form-control form-control-sm new-poll-input new-poll-option" id="new-poll-option5" placeholder="Vaihtoehto 5">
+                </div>
+              </div>
+            </div>
+            <div class="row mb-1">
+              <p id="new-poll-error" class="text-danger small fst-italic invisible">Vaihtoehdon maksimipituus on 30 merkkiä.</p>
+            </div>
+            <div class="mb-1">
+              <input type="checkbox" class="form-check-inline" id="test-votes">
+              <label for="test-votes" class="form-label">Käytä testiääniä</label>
+              <p class="text-secondary small fst-italic">Lisää satunnaisen määrän ääniä testaamistarkoituksiin</p>
+            </div>
+            
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sulje</button>
+            <button type="button" id="create-poll-button" class="btn btn-primary disabled" data-bs-dismiss="modal">Luo äänestys</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <div class="container p-5 text-center">
+      <h6>TOMMI PARTANEN &copy;2023</h6>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>  <!-- Projektikohtainen skripti -->
+  <script type="module" src="main.js"></script>
+</body>
+
+</html>
