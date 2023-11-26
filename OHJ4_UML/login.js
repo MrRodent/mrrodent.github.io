@@ -13,7 +13,8 @@ const pwField = document.getElementById('loginInputPw');
 //////////////
 // Logging in
 function checkID(id, password) {
-  if (!findID(id)) {
+  const idLower = id.toLowerCase();
+  if (!findID(idLower)) {
     idField.classList.add('is-invalid');
     errorMsgID.innerHTML = 'Käyttäjätunnusta ei löydy';
     return false;
@@ -23,7 +24,7 @@ function checkID(id, password) {
 
   let users = getUsers();
   for (const user of users) {
-    if (id === user.id) {
+    if (idLower === user.id) {
         if (password === user.pw) {
           pwField.classList.remove('is-invalid');
           return true;
@@ -78,7 +79,7 @@ function updateNavbarOnLogin(id) {
   }
 }
 
-function showVotingOptions() {
+export function showVotingOptions() {
   const voteButtons = document.querySelectorAll('.vote-button');
   voteButtons.forEach(button => {
     button.classList.remove('invisible');

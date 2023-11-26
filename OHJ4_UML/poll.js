@@ -1,5 +1,5 @@
-import { currentlyLoggedUser } from "./login.js";
-import { getPolls, getUsers } from "./utils.js";
+import { showVotingOptions } from "./login.js";
+import { getPolls } from "./utils.js";
 
 export class pollCard {
   constructor (id, subject, description, choices, testVotes) {
