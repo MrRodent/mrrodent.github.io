@@ -1,7 +1,7 @@
 import { setCameraOffsets } from "./camera.js";
 import { globalPause, setGlobalPause } from "./main.js";
 
-export let isMobile = false;
+export let isMobile = true;
 
 export function responsivityCheck() {
     setCameraOffsets();
