@@ -48,28 +48,22 @@ function resizeCanvas() {
 window.addEventListener('resize', responsivityCheck);
 
 /////////////////
-// Controls
-var upBtn = document.getElementById("mob-dir-up");
-var downBtn = document.getElementById("mob-dir-down");
+// DOM
 
-upBtn.addEventListener("mousedown", function() {
-    // console.log("up");
-    var event = new KeyboardEvent("keydown", { key: "w" });
-    document.dispatchEvent(event);
-});
-
-downBtn.addEventListener("mousedown", function() {
-    // console.log("down");
-    var event = new KeyboardEvent("keydown", { key: "s" });
-    document.dispatchEvent(event);
-});
-
-/////////////////
-// Full screen when landscape
-window.addEventListener("orientationchange", function() {
-    if (screen.orientation.angle === 90 || screen.orientation.angle === -90) {
-        document.documentElement.requestFullscreen();
-    } else {
-        document.exitFullscreen();
-    }
-});
+const fsBtn = document.getElementById('fullscreen-button');
+fsBtn.addEventListener('click', () => {
+    document.documentElement.requestFullscreen();
+    fsBtn.style.visibility = "hidden";
+})
+// document.addEventListener("DOMContentLoaded", function() {
+//     // Full screen button
+//     const fsBtn = document.getElementById('fullscreen-button');
+//     fsBtn.addEventListener('click', () => {
+//         console.log("rq fs");
+//         // if (screen.orientation.angle === 90 || screen.orientation.angle === -90) {
+//         //     document.documentElement.requestFullscreen();
+//         // } else {
+//         //     document.exitFullscreen();
+//         // }
+//     });
+// });
