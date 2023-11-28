@@ -47,23 +47,10 @@ function resizeCanvas() {
 
 window.addEventListener('resize', responsivityCheck);
 
-/////////////////
-// DOM
-
+//////////////////////
+// Full screen button
 const fsBtn = document.getElementById('fullscreen-button');
 fsBtn.addEventListener('click', () => {
     document.documentElement.requestFullscreen();
-    fsBtn.style.visibility = "hidden";
+    screen.orientation.lock('landscape');
 })
-// document.addEventListener("DOMContentLoaded", function() {
-//     // Full screen button
-//     const fsBtn = document.getElementById('fullscreen-button');
-//     fsBtn.addEventListener('click', () => {
-//         console.log("rq fs");
-//         // if (screen.orientation.angle === 90 || screen.orientation.angle === -90) {
-//         //     document.documentElement.requestFullscreen();
-//         // } else {
-//         //     document.exitFullscreen();
-//         // }
-//     });
-// });
