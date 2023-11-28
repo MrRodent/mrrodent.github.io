@@ -482,8 +482,13 @@ body {
 .mobile-controller {
     visibility: hidden;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
+}
+
+.mobile-controller button {
+    width: 50px;
+    height: 50px;
+    font-size: 2em;
 }
 
 .mobile-controller button {

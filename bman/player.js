@@ -491,15 +491,15 @@ class Player
 
     // Mobile controls
     bindMobile() {
-        document.getElementById("mob-dir-up").addEventListener("mousedown", () => { this.moveUp() });
-        document.getElementById("mob-dir-up").addEventListener("mouseup", () => { this.dy = 0; });
-        document.getElementById("mob-dir-down").addEventListener("mousedown", () => { this.moveDown() });
-        document.getElementById("mob-dir-down").addEventListener("mouseup", () => { this.dy = 0; });
-        document.getElementById("mob-dir-right").addEventListener("mousedown", () => { this.moveRight() });
-        document.getElementById("mob-dir-right").addEventListener("mouseup", () => { this.dx = 0; });
-        document.getElementById("mob-dir-left").addEventListener("mousedown", () => { this.moveLeft() });
-        document.getElementById("mob-dir-left").addEventListener("mouseup", () => { this.dx = 0; });
-        document.getElementById("mob-bomb").addEventListener("click", () => { this.dropBomb(); });
+        document.getElementById("mob-dir-up").addEventListener("touchstart", () => { this.moveUp() });
+        document.getElementById("mob-dir-up").addEventListener("touchend", () => { this.dy = 0; });
+        document.getElementById("mob-dir-down").addEventListener("touchstart", () => { this.moveDown() });
+        document.getElementById("mob-dir-down").addEventListener("touchend", () => { this.dy = 0; });
+        document.getElementById("mob-dir-right").addEventListener("touchstart", () => { this.moveRight() });
+        document.getElementById("mob-dir-right").addEventListener("touchend", () => { this.dx = 0; });
+        document.getElementById("mob-dir-left").addEventListener("touchstart", () => { this.moveLeft() });
+        document.getElementById("mob-dir-left").addEventListener("touchend", () => { this.dx = 0; });
+        document.getElementById("mob-bomb").addEventListener("touchstart", () => { this.dropBomb(); });
     }
 
     onDeath(enemyWhoKilled, wasBomb) {
