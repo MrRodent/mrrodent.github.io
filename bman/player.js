@@ -8,7 +8,7 @@ import { spriteSheets } from "./spritesheets.js";
 import { showGGMenu } from "./page.js";
 
 
-const godMode = false;
+const godMode = true;
 
 export const Direction = {
     UP: "Up",
@@ -421,33 +421,50 @@ class Player
         }
     }
 
+    // Movement
+    moveUp() {
+        this.dy = -this.speed * deltaTime;
+        this.dx = 0;
+        this.direction = Direction.UP;
+    }
+
+    moveLeft() {
+        this.dx = -this.speed * deltaTime;
+        this.dy = 0;
+        this.direction = Direction.LEFT;
+    }
+
+    moveDown() {
+        this.dy = this.speed * deltaTime;
+        this.dx = 0;
+        this.direction = Direction.DOWN;
+    }
+
+    moveRight() {
+        this.dx = this.speed * deltaTime;
+        this.dy = 0;
+        this.direction = Direction.RIGHT;
+    }
+
     // Inputs
     handleKeyDown(event) {
         event.preventDefault();
 
         switch(event.code) {
             case this.keybinds.move_up:
-                this.dy = -this.speed * deltaTime;
-                this.dx = 0;
-                this.direction = Direction.UP;
+                this.moveUp();
                 break;
 
             case this.keybinds.move_left:
-                this.dx = -this.speed * deltaTime;
-                this.dy = 0;
-                this.direction = Direction.LEFT;
+                this.moveLeft();
                 break;
 
             case this.keybinds.move_down:
-                this.dy = this.speed * deltaTime;
-                this.dx = 0;
-                this.direction = Direction.DOWN;
+                this.moveDown();
                 break;
 
             case this.keybinds.move_right:
-                this.dx = this.speed * deltaTime;
-                this.dy = 0;
-                this.direction = Direction.RIGHT;
+                this.moveRight();
                 break;
 
             case this.keybinds.drop_bomb:
@@ -470,6 +487,19 @@ class Player
                 this.dx = 0;
                 break;
         }
+    }
+
+    // Mobile controls
+    bindMobile() {
+        document.getElementById("mob-dir-up").addEventListener("mousedown", () => { this.moveUp() });
+        document.getElementById("mob-dir-up").addEventListener("mouseup", () => { this.dy = 0; });
+        document.getElementById("mob-dir-down").addEventListener("mousedown", () => { this.moveDown() });
+        document.getElementById("mob-dir-down").addEventListener("mouseup", () => { this.dy = 0; });
+        document.getElementById("mob-dir-right").addEventListener("mousedown", () => { this.moveRight() });
+        document.getElementById("mob-dir-right").addEventListener("mouseup", () => { this.dx = 0; });
+        document.getElementById("mob-dir-left").addEventListener("mousedown", () => { this.moveLeft() });
+        document.getElementById("mob-dir-left").addEventListener("mouseup", () => { this.dx = 0; });
+        document.getElementById("mob-bomb").addEventListener("click", () => { this.dropBomb(); });
     }
 
     onDeath(enemyWhoKilled, wasBomb) {
@@ -510,6 +540,7 @@ class Player
     }
 };
 
+
 export const keybinds1 = {
     move_up: "KeyW",
     move_down: "KeyS",
@@ -541,11 +572,16 @@ export function resetPlayerPositions()
     });
 }
 
-export function spawnPlayers()
+export function spawnPlayers(amount = 1)
 {
-    // NOTE: startX, startY = null menee aina vasempaan yläkulmaan tileSizen mukaan
-    players.push(new Player(0, null, null, keybinds1, "./assets/player0.png"));
-    // players.push(new Player(1, (levelWidth-2)*tileSize, (levelHeight-2)*tileSize, keybinds2));
+    if(amount == 1) {
+        // NOTE: startX, startY = null menee aina vasempaan yläkulmaan tileSizen mukaan
+        players.push(new Player(0, null, null, keybinds1, "./assets/player0.png"));
+    } else {
+        players.push(new Player(0, null, null, keybinds1, "./assets/player0.png"));
+        players.push(new Player(1, (levelWidth - 2) * tileSize, (levelHeight - 2) * tileSize, keybinds2, "./assets/player0.png"));
+    }
+
     for (let i = 0; i < players.length; i++) {
         document.addEventListener("keyup", function(event) {
             players[i].handleKeyUp(event);
@@ -555,6 +591,7 @@ export function spawnPlayers()
         });
 
         players[i].onSpawned();
+        players[i].bindMobile();
     }
 };
 

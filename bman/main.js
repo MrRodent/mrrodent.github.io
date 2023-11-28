@@ -7,29 +7,46 @@ import { renderPlayer } from "./player.js";
 import { renderEnemies } from "./enemy.js";
 import { renderBombs, renderExplosions } from "./bomb.js";
 import { Game } from "./gamestate.js";
+import { MultiplayerGame } from "./multiplayergamestate.js";
 import { updateCamera } from "./camera.js";
 import { showDoor, showPauseMenu } from "./page.js";
+// TODO: Nämä importit voi ottaa myöhemmin pois
+import { fetchEverything } from "./gamestate.js";
+import { loadTextures } from "./level.js";
+import { loadSpriteSheets } from "./spritesheets.js";
+import { responsivityCheck } from "./mobile.js";
 
 
 ////////////////////
 // Globals
 export let canvas;
 export let ctx;
-export let game = new Game();
 export let level = [];
 export let globalPause = true;
-// Tarttee setterin koska JS..
 export function setGlobalPause(value) {
     globalPause = value;
+}
+
+export let game = new Game();
+export let numOfPlayers = 1;
+export function setNumOfPlayers(value) {
+    numOfPlayers = value;
+
+    if(value == 1) {
+        game = new Game();
+    } else if(value == 2) {
+        game = new MultiplayerGame();
+    }
 }
 
 ////////////////////
 // Settings
 export const tileSize = 64;
-export const cagePlayer = true;
+export const cagePlayer = false;
 export const cageMultiplayer = false;
-export const bigBombOverlay = true;
-const fadeTransitions = true;
+export const bigBombOverlay = false;
+const showTutorial = false;
+const fadeTransitions = false;
 
 ////////////////////
 // Assets
@@ -90,7 +107,9 @@ function Render(timeStamp)
         levelHeader.render();
         gameOverText.render();
         deathReasonText.render();
-        tutorial.render();
+        if (showTutorial) {
+            tutorial.render();
+        }
     }
 
     lastTimeStamp = timeStamp
@@ -98,15 +117,29 @@ function Render(timeStamp)
     requestAnimationFrame(Render);
 }
 
+// TODO: Tämä pois kun ei tartteta enää debuggailla
+async function debugLoad()
+{
+    await fetchEverything();
+    await loadTextures();
+    await loadSpriteSheets();
+    
+    game.newGame();
+}
+
 ////////////////////
 // DOM
 document.addEventListener("DOMContentLoaded", function ()
 {
+    responsivityCheck();
     canvas = document.getElementById("canvas");
     if (canvas) {
         ctx = canvas.getContext("2d");
         if (ctx) {
-                Render();
+            // TODO: Tämä pois kun ei tartteta enää debuggailla
+            debugLoad();
+            
+            Render();
         } else {
             throw new Error("Could not find ctx object.");
         }

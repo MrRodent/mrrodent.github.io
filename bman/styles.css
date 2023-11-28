@@ -59,7 +59,7 @@ body {
 }
 
 .debug {
-    visibility: hidden;
+    visibility: visible;
 }
 
 .debug-buttons {
@@ -69,10 +69,6 @@ body {
     margin-top: 0.5em;
     max-width: 800px;
     justify-content: space-evenly;
-}
-
-#sprite-sheet {
-    display: none;
 }
 
 .health-points {
@@ -93,7 +89,7 @@ body {
 
 /* Play Game */
 .play-game-container {
-    visibility: visible;
+    visibility: hidden; /* TODO: Takas visibleks kun ei tartte debuggailla */
     display: flex;
     position: absolute;
     width: 832px;
@@ -190,6 +186,21 @@ body {
     font-size: 1.4rem;
     visibility: hidden;
     color: red;
+}
+
+.multiplayer-settings {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding-top: 20px;
+}
+
+#numPlayers {
+    font-size: 20px;
+    width: 50px;
+    height: 22px;
 }
 
 /* Pause menu */
@@ -423,4 +434,101 @@ body {
     background-repeat: repeat;
     width: 832px;
     height: 832px;
+}
+
+/* Mobile */
+#portrait-prompt {
+    visibility: hidden;
+}
+
+/* Portrait mode prompt */
+/* TODO: 700px on vaan ikkunan koon testailuun (vähän pienempi kuin labyrintti) */
+@media only screen and (orientation: portrait) and (max-width: 700px) {
+    /* TODO: make sure that not scrollable */
+    html, body {
+        overflow: hidden;
+        height: auto;
+    }
+
+    #portrait-prompt-container {
+        visibility: visible;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        z-index: 9999;
+    }
+
+    #portrait-prompt {
+        visibility: visible;
+        color: white;
+        justify-content: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: white;
+        font-size: 1.2em;
+    }
+    
+    .canvas-container {
+        visibility: hidden;
+    }
+}
+
+/* Mobile controls */
+.mobile-controller {
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mobile-controller button {
+    size: 200px;
+}
+
+#mobile-buttons-left {
+    margin-left: 50px;
+    z-index: 9999;
+}
+
+#mobile-buttons-right {
+    margin-left: auto;
+    margin-right: 50px;
+    z-index: 9999;
+}
+
+/* TODO: tablet mode separately */
+/* Widest screen emulations on firefox: */
+/* iPadOS 14.7.1: 810px */
+/* iPhone 12/13 Pro Max iOS 14.6: 428px */
+@media only screen and (orientation: landscape) and (max-height: 428px) {
+    html, body {
+        overflow: hidden;
+        height: auto;
+    }
+    
+    body {
+        background-color: black;
+    }
+    
+    .mobile-controller {
+        visibility: visible;
+    }
+
+    .canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+    }
+
+    .debug-buttons {
+        visibility: hidden;
+    }
 }

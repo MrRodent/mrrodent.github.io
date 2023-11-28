@@ -30,6 +30,13 @@
         <div class="main-menu-container">
             <div class="main-menu-content">
                 <h1 class="header">NOT BOMBERMAN</h1>
+                <div class="multiplayer-settings">
+                    <label for="numPlayers">Number of Players</label>
+                    <select id="numPlayers" name="numPlayers">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
                 <div class="main-menu-button-container">
                     <small id="confirmText">This will delete your previous save.<br> Do you want to proceed?</small>
                     <button id="newGameButton" class="text-button">New Game</button>
@@ -142,6 +149,30 @@
             <button id="scale50" class="text-button">Scale 50%</button>
             <button id="scale75" class="text-button">Scale 75%</button>
             <button id="scale100" class="text-button">Scale 100%</button>
+        </div>
+    </div>
+
+    <!-- Mobile: portrait prompt -->
+    <div id="portrait-prompt-container">
+        <div id="portrait-prompt">Please turn your device to landscape mode</div>
+    </div>
+
+    <!-- Mobile: controls -->
+    <div class="mobile-controller">
+        <div id="mobile-buttons-left">
+            <div style="margin-left: 25px">
+                <button id="mob-dir-up">Move up</button>
+            </div>
+            <div>
+                <button id="mob-dir-left">Move left</button>
+                <button id="mob-dir-right">Move right</button>
+            </div>
+            <div style="margin-left: 21px">
+                <button id="mob-dir-down">Move down</button>
+            </div>
+        </div>
+        <div id="mobile-buttons-right">
+            <button id="mob-bomb">Drop bomb</button>
         </div>
     </div>
 
