@@ -1,7 +1,7 @@
 import { setCameraOffsets } from "./camera.js";
 import { globalPause, setGlobalPause } from "./main.js";
 
-export let isMobile = true;
+export let isMobile = false;
 
 export function responsivityCheck() {
     setCameraOffsets();
@@ -62,4 +62,14 @@ downBtn.addEventListener("mousedown", function() {
     // console.log("down");
     var event = new KeyboardEvent("keydown", { key: "s" });
     document.dispatchEvent(event);
+});
+
+/////////////////
+// Full screen when landscape
+window.addEventListener("orientationchange", function() {
+    if (screen.orientation.angle === 90 || screen.orientation.angle === -90) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
 });
