@@ -28,13 +28,16 @@ export function setGlobalPause(value) {
 }
 
 export let game = new Game();
+export let isMultiplayer = false;
 export let numOfPlayers = 1;
 export function setNumOfPlayers(value) {
     numOfPlayers = value;
 
     if(value == 1) {
+        isMultiplayer = false;
         game = new Game();
     } else if(value == 2) {
+        isMultiplayer = true;
         game = new MultiplayerGame();
     }
 }
@@ -46,7 +49,7 @@ export const cagePlayer = false;
 export const cageMultiplayer = false;
 export const bigBombOverlay = false;
 const showTutorial = false;
-const fadeTransitions = false;
+const fadeTransitions = true;
 
 ////////////////////
 // Assets
@@ -82,16 +85,18 @@ function Render(timeStamp)
 
         updateCamera();
         renderFloor();
-        if (!showDoor) {
+        if (!showDoor && !isMultiplayer) {
             exit.render();
             renderPowerups();
         }
-        entrance.render();
+        if(!isMultiplayer){
+            entrance.render();
+        }
         renderBombs();
         renderPlayer(timeStamp);
         renderWalls();
         locBlinkers.render();
-        if (showDoor) {
+        if (showDoor && !isMultiplayer) {
             exit.render();
             renderPowerups();
         }

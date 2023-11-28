@@ -1,5 +1,5 @@
 import { Game, setLevelHeight, setLevelPowerup, setLevelType, setLevelWidth, setPowerupCount, setSoftwallPercent } from "./gamestate.js";
-import { playTrack, loadAudioFiles, tracks, playBirdsong, stopBirdsong } from "./audio.js";
+import { playTrack, loadAudioFiles, tracks, playBirdsong, stopBirdsong, stopCurrentTrack } from "./audio.js";
 import { clearBombs } from "./bomb.js";
 import { setCameraX } from "./camera.js";
 import { clearEnemies, enemies, spawnEnemies } from "./enemy.js";
@@ -10,6 +10,14 @@ import { clearPlayers, players, resetPlayerPositions, spawnPlayers } from "./pla
 import { createTiles, exitLocation} from "./tile.js";
 import { levels, levelWidth, levelHeight, levelType, levelPowerup, softwallPercent, powerupCount } from "./gamestate.js";
 
+const PVPlevelData = {
+    width: 13,
+    height: 13,
+    type: "forest_night",
+    powerup: "random",
+    powerupCount: 5,
+    softwallPercent: 0.2,
+};
 export class MultiplayerGame extends Game
 {
     constructor() {
@@ -19,6 +27,8 @@ export class MultiplayerGame extends Game
 
     newGame() {
         console.log("MultiplayerGame");
+        stopBirdsong(); // TODO: Halutaanko jotain audiota tänne?
+        stopCurrentTrack();
         fadeTransition.fadeIn();
         setGlobalPause(true);
         localStorage.clear();
@@ -33,53 +43,21 @@ export class MultiplayerGame extends Game
     }
 
     initLevel() {
-
         // Reset camera position
         setCameraX(0);
     }
 
     newLevel() {
-        /*
-        if (this.level === 1) {
-            tutorial.playAnimation();
-            bigBomb.visible = true;
-            playBirdsong();
-        } else {
-            if (tutorial.visible) {
-                tutorial.visible = false;
-            }
-            bigBomb.visible = false;         
-        }
-        */
-
-        /*
-        if (this.level >= levels.length - 1) {
-            lastLevel = true;
-        } else lastLevel = false;
-        */
-        
-        // Set the music
-        //this.beatDropped = false;
-        
-        /*
-        if (lastLevel) {
-            playTrack(tracks['HEART']);
-        } 
-        else if (this.level > 1) {
-            playTrack(tracks['INT1']);
-        }
-        */
-
         setGlobalPause(true);
+        clearEnemies(); // Varmuuden vuoksi..
         clearBombs();
  
-        const levelData = levels[this.level];
-        setLevelHeight(levelData.height);
-        setLevelWidth(levelData.width);
-        setLevelType(levelData.type);
-        setLevelPowerup(levelData.powerup);
-        setPowerupCount(levelData.powerupCount);
-        setSoftwallPercent(levelData.softwallPercent);
+        setLevelHeight(PVPlevelData.height);
+        setLevelWidth(PVPlevelData.width);
+        setLevelType(PVPlevelData.type);
+        setLevelPowerup(PVPlevelData.powerup);
+        setPowerupCount(PVPlevelData.powerupCount);
+        setSoftwallPercent(PVPlevelData.softwallPercent);
         setTextures();
         
         let newLevel = createTiles();

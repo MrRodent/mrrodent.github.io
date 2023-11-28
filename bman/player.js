@@ -1,4 +1,4 @@
-import { ctx, level, tileSize, deltaTime, game, deathReasonText, bigBomb, setGlobalPause } from "./main.js";
+import { ctx, level, tileSize, deltaTime, game, deathReasonText, bigBomb, setGlobalPause, isMultiplayer } from "./main.js";
 import { lastLevel, levelHeight, levelType, levelWidth } from "./gamestate.js";
 import { getMusicalTimeout, msPerBeat, playAudio, playFootsteps, playTrack, randomSfx, sfxs, stopFootsteps, tracks } from "./audio.js";
 import { Bomb, tilesWithBombs } from "./bomb.js";
@@ -50,6 +50,10 @@ class Player
 
         // Key binds
         this.keybinds = keybinds;
+
+        // Event listener handles
+        this.keyUpHandler = null;
+        this.keyDownHandler = null;
 
         // Collision
         this.collisionW = this.w - 32;
@@ -505,41 +509,49 @@ class Player
     onDeath(enemyWhoKilled, wasBomb) {
         if (godMode) return;
 
-        if (!this.isDead) {
-            this.isDead = true;
-            this.healthPoints--;
-            this.updateHealthPoints();
-            // Save the game state here, so we can save healthpoints
-            game.saveGame();
-            
-            // Audio
-            stopFootsteps();
-            playAudio(sfxs['DEATH']);
-            if (game.level > 1) {
-                let delay = getMusicalTimeout();
-                setTimeout(() => {
-                    let randomLaugh;
-                    randomLaugh = randomSfx(sfxs['LAUGHS']);
-                    playAudio(randomLaugh);
-                }, delay);
+        if(isMultiplayer) {
+            if (!this.isDead) {
+                this.isDead = true;
+                //this.healthPoints--;
+                //this.updateHealthPoints();
+                game.restartLevel();
             }
+        } else {
+            if (!this.isDead) {
+                this.isDead = true;
+                this.healthPoints--;
+                this.updateHealthPoints();
+                // Save the game state here, so we can save healthpoints
+                game.saveGame();
 
-            if(this.healthPoints <= 0) {
-                game.over();
-            } else {
-                // Play text animation
-                if(enemyWhoKilled) {
-                    deathReasonText.playAnimation(`Killed by a ${enemyWhoKilled.enemyType}`);
-                } else if(wasBomb) {
-                    deathReasonText.playAnimation("Killed by a bomb");
+                // Audio
+                stopFootsteps();
+                playAudio(sfxs['DEATH']);
+                if (game.level > 1) {
+                    let delay = getMusicalTimeout();
+                    setTimeout(() => {
+                        let randomLaugh;
+                        randomLaugh = randomSfx(sfxs['LAUGHS']);
+                        playAudio(randomLaugh);
+                    }, delay);
                 }
 
-                game.restartLevel();
+                if (this.healthPoints <= 0) {
+                    game.over();
+                } else {
+                    // Play text animation
+                    if (enemyWhoKilled) {
+                        deathReasonText.playAnimation(`Killed by a ${enemyWhoKilled.enemyType}`);
+                    } else if (wasBomb) {
+                        deathReasonText.playAnimation("Killed by a bomb");
+                    }
+
+                    game.restartLevel();
+                }
             }
         }
     }
 };
-
 
 export const keybinds1 = {
     move_up: "KeyW",
@@ -577,26 +589,32 @@ export function spawnPlayers(amount = 1)
     if(amount == 1) {
         // NOTE: startX, startY = null menee aina vasempaan yläkulmaan tileSizen mukaan
         players.push(new Player(0, null, null, keybinds1, "./assets/player0.png"));
+        players[0].bindMobile();
     } else {
         players.push(new Player(0, null, null, keybinds1, "./assets/player0.png"));
         players.push(new Player(1, (levelWidth - 2) * tileSize, (levelHeight - 2) * tileSize, keybinds2, "./assets/player0.png"));
     }
 
     for (let i = 0; i < players.length; i++) {
-        document.addEventListener("keyup", function(event) {
+        players[i].keyUpHandler = function(event) {
             players[i].handleKeyUp(event);
-        });
-        document.addEventListener("keydown", function(event) {
+        };
+
+        players[i].keyDownHandler = function(event) {
             players[i].handleKeyDown(event);
-        });
+        };
+
+        document.addEventListener("keyup", players[i].keyUpHandler);
+        document.addEventListener("keydown", players[i].keyDownHandler);
 
         players[i].onSpawned();
-        players[i].bindMobile();
     }
 };
 
 export function clearPlayers() {
     players.forEach(p => {
+        document.removeEventListener("keyup", p.keyUpHandler);
+        document.removeEventListener("keydown", p.keyDownHandler);
         for(let prop in p) {
             p[prop] = null;
         }

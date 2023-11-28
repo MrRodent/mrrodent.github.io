@@ -480,8 +480,7 @@ body {
 
 /* Mobile controls */
 .mobile-controller {
-    visibility: hidden;
-    display: flex;
+    display: none;
     justify-content: space-between;
 }
 
@@ -491,15 +490,41 @@ body {
     font-size: 2em;
     size: 200px;
     user-select: none;
+    background: black;
+    color: white;
+    border-color: #303030;
+    border-radius: 10%;
 }
 
+.d-pad {
+    margin-top: 100px;
+}
 
-#mobile-buttons-left {
+#mob-dir-left {
+    margin-left: -25px;
+}
+
+#mob-dir-right {
+    margin-left: 50px;
+}
+
+#mob-dir-up, #mob-dir-down {
+    margin-left: 25px;
+}
+
+#mob-bomb {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    margin-top: 180px;
+}
+
+.mobile-buttons-left {
     margin-left: 50px;
     z-index: 9999;
 }
 
-#mobile-buttons-right {
+.mobile-buttons-right {
     margin-left: auto;
     margin-right: 50px;
     z-index: 9999;
@@ -512,7 +537,6 @@ body {
 @media only screen and (orientation: landscape) and (max-height: 428px) {
     html, body {
         height: auto;
-        /* height: 100%; */
         overflow: hidden;
     }
     
@@ -521,7 +545,7 @@ body {
     }
     
     .mobile-controller {
-        visibility: visible;
+        display: flex;
     }
 
     .canvas-container {
@@ -531,6 +555,12 @@ body {
         right: 0;
         bottom: 0;
         margin: auto;
+    }
+
+    #canvas {
+        border-style: solid;
+        border-width: 2px;
+        border-color: #303030;
     }
 
     .debug-buttons {
