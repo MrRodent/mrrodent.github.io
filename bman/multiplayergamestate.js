@@ -43,6 +43,8 @@ export class MultiplayerGame extends Game
     }
 
     initLevel() {
+        // Heartbeatit pois
+        this.beatDropped = true;
         // Reset camera position
         setCameraX(0);
     }
@@ -65,16 +67,76 @@ export class MultiplayerGame extends Game
         Array.prototype.push.apply(level, newLevel);
 
         if (level.length > 0) {
-            this.firstBombDropped = false;
-            this.firstBombExploded = false;
-            levelHeader.playAnimation();
-            //entrance.playAnimation();
-            //exit.init();
+            this.firstBombDropped = true;
+            this.firstBombExploded = true;
+            //levelHeader.playAnimation(); TODO
             resetPlayerPositions();
         } else {
             throw new Error("Failed to create level");
         }
         initHardWallsCanvas();
         setGlobalPause(false);
+    }
+
+    restartLevel()
+    {
+        setTimeout(() => {
+            setGlobalPause(true);
+            clearBombs();
+
+            setLevelHeight(PVPlevelData.height);
+            setLevelWidth(PVPlevelData.width);
+            setLevelType(PVPlevelData.type);
+            setLevelPowerup(PVPlevelData.powerup);
+            setPowerupCount(PVPlevelData.powerupCount);
+            setSoftwallPercent(PVPlevelData.softwallPercent);
+            setTextures();
+
+            let newLevel = createTiles();
+            level.length = 0;
+            Array.prototype.push.apply(level, newLevel);
+
+            if (level.length > 0) {
+                this.firstBombDropped = true;
+                this.firstBombExploded = true;
+                //levelHeader.playAnimation(); TODO
+                //resetPlayerPositions();
+            } else {
+                throw new Error("Failed to create level");
+            }
+            initHardWallsCanvas();
+            setGlobalPause(false);
+        
+            this.initLevel();
+            players.forEach(p => {
+                p.isDead = false;
+            });
+            resetPlayerPositions();
+        }, 2000);
+    }
+    
+    increaseScore(points) {
+        // TODO
+    }
+
+    nextLevel() {
+        // Only one level
+    }
+    
+    checkGameState() {
+        // TODO
+    }
+
+    over() {
+    // TODO
+    }
+
+    // Saving & loading
+    saveGame() {
+        // No saving
+    }
+    
+    loadGame() {
+        // No loading
     }
 }
