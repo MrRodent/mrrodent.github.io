@@ -8,7 +8,7 @@ import { spriteSheets } from "./spritesheets.js";
 import { showGGMenu } from "./page.js";
 
 
-const godMode = true;
+const godMode = false;
 
 export const Direction = {
     UP: "Up",
@@ -329,12 +329,15 @@ class Player
 
         if (playerTile.isDeadly) {
             collides = true;
-            this.onDeath(null, true);
+            const instigator = playerTile.instigatedBy;
+            this.onDeath(null, true, instigator);
         }
 
         if (!collides) {
-            this.x = nextX;
-            this.y = nextY;
+            //this.x = nextX;
+            //this.y = nextY;
+            this.x += this.dx;
+            this.y += this.dy;
         }
 
     }
@@ -406,22 +409,62 @@ class Player
                 
                 // Checks whether any player is still standing on the bomb after it was dropped.
                 let posCheck = setInterval(() => {
-                    let isPlayerOnBomb = false;
-                    // NOTE: Ei tarkisteta mahdollisia muita pelaajia!
-                    if(aabbCollision(bombTile.bomb.collisionBox, this.collisionBox)) {
-                        isPlayerOnBomb = true;
-                    }
-                    if (this.isDead) {
-                        bombTile.isWalkable = true;
-                        bombTile.isDeadly = false;
-                        clearInterval(posCheck);
-                    }
-                    if (!isPlayerOnBomb) {
+                    let arePlayersOnBomb = false;
+                    
+                    players.forEach(p => {
+                        if (aabbCollision(bombTile.bomb.collisionBox, p.collisionBox)) {
+                            arePlayersOnBomb = true;
+                        }
+                        // TODO: Tämä ei välttämättä ole enää ihan oikein,
+                        // jos on useampia pelaajia...
+                        if (p.isDead) {
+                            bombTile.isWalkable = true;
+                            bombTile.isDeadly = false;
+                            clearInterval(posCheck);
+                        }
+                    });
+                    if (!arePlayersOnBomb) {
                         bombTile.isWalkable = false;
                         clearInterval(posCheck);
                     }
                 }, 1);
             }
+        }
+    }
+
+    buildWall() {
+        if(this.isDead) return;
+
+        if(isMultiplayer) {
+            // TODO: Powerupiks joita voi poimia, vai kiinteä määrä??
+            let tile = getTileFromWorldLocation(this);
+            const x = tile.x / tileSize;
+            const y = tile.y / tileSize;
+            level[x][y].type = "SoftWall";
+
+            // Checks whether any player is still standing on the tile after it was dropped.
+            let posCheck = setInterval(() => {
+                let arePlayersOnTile = false;
+
+                const collisionBox = { x: tile.x, y: tile.y, w: tileSize, h: tileSize };
+
+                players.forEach(p => {
+                    if (aabbCollision(collisionBox, p.collisionBox)) {
+                        arePlayersOnTile = true;
+                    }
+                    // TODO: Tämä ei välttämättä ole enää ihan oikein,
+                    // jos on useampia pelaajia...
+                    if (p.isDead) {
+                        tile.isWalkable = true;
+                        tile.isDeadly = false;
+                        clearInterval(posCheck);
+                    }
+                });
+                if (!arePlayersOnTile) {
+                    tile.isWalkable = false;
+                    clearInterval(posCheck);
+                }
+            }, 1);
         }
     }
 
@@ -474,6 +517,10 @@ class Player
             case this.keybinds.drop_bomb:
                 this.dropBomb();
                 break;
+
+            case this.keybinds.build:
+                this.buildWall();
+                break;
         }
     }
 
@@ -495,25 +542,53 @@ class Player
 
     // Mobile controls
     bindMobile() {
-        document.getElementById("mob-dir-up").addEventListener("touchstart", () => { this.moveUp() });
-        document.getElementById("mob-dir-up").addEventListener("touchend", () => { this.dy = 0; });
-        document.getElementById("mob-dir-down").addEventListener("touchstart", () => { this.moveDown() });
-        document.getElementById("mob-dir-down").addEventListener("touchend", () => { this.dy = 0; });
-        document.getElementById("mob-dir-right").addEventListener("touchstart", () => { this.moveRight() });
-        document.getElementById("mob-dir-right").addEventListener("touchend", () => { this.dx = 0; });
-        document.getElementById("mob-dir-left").addEventListener("touchstart", () => { this.moveLeft() });
-        document.getElementById("mob-dir-left").addEventListener("touchend", () => { this.dx = 0; });
-        document.getElementById("mob-bomb").addEventListener("touchstart", () => { this.dropBomb(); });
+        document.getElementById("mob-dir-up").addEventListener("touchstart", (event) => {
+          event.preventDefault();
+          this.moveUp();
+        });
+        document.getElementById("mob-dir-up").addEventListener("touchend", (event) => { 
+            event.preventDefault(); 
+            this.dy = 0; 
+        });
+        document.getElementById("mob-dir-down").addEventListener("touchstart", (event) => { 
+            event.preventDefault(); 
+            this.moveDown() 
+        });
+        document.getElementById("mob-dir-down").addEventListener("touchend", (event) => { 
+            event.preventDefault(); 
+            this.dy = 0; 
+        });
+        document.getElementById("mob-dir-right").addEventListener("touchstart", (event) => { 
+            event.preventDefault(); 
+            this.moveRight() 
+        });
+        document.getElementById("mob-dir-right").addEventListener("touchend", (event) => { 
+            event.preventDefault(); 
+            this.dx = 0; 
+        });
+        document.getElementById("mob-dir-left").addEventListener("touchstart", (event) => { 
+            event.preventDefault(); 
+            this.moveLeft() 
+        });
+        document.getElementById("mob-dir-left").addEventListener("touchend", (event) => { 
+            event.preventDefault(); 
+            this.dx = 0; 
+        });
+        document.getElementById("mob-bomb").addEventListener("touchstart", (event) => {
+          event.preventDefault();
+          this.dropBomb();
+        });
     }
+      
 
-    onDeath(enemyWhoKilled, wasBomb) {
+    // NOTE: Instigator mahdollisesti validi ainoastaan pvp-modessa
+    onDeath(enemyWhoKilled, wasBomb, instigator) {
         if (godMode) return;
 
         if(isMultiplayer) {
             if (!this.isDead) {
                 this.isDead = true;
-                //this.healthPoints--;
-                //this.updateHealthPoints();
+                game.updateScore(this.id, instigator, enemyWhoKilled);
                 game.restartLevel();
             }
         } else {
@@ -559,6 +634,7 @@ export const keybinds1 = {
     move_left: "KeyA",
     move_right: "KeyD",
     drop_bomb: "Space",
+    build: "KeyE",
 };
 
 export const keybinds2 = {
@@ -567,6 +643,7 @@ export const keybinds2 = {
     move_left: "ArrowLeft",
     move_right: "ArrowRight",
     drop_bomb: "Enter",
+    build: "ControlRight"
 };
 
 // Finds a player with given id and returns it

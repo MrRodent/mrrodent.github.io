@@ -1,7 +1,7 @@
 import { playAudio, sfxs } from "./audio.js";
 import { enemies } from "./enemy.js";
 import { lastLevel } from "./gamestate.js";
-import { canvas, ctx, game, locBlinkers, tileSize } from "./main.js";
+import { FULL_CANVAS_SIZE, canvas, ctx, game, locBlinkers, tileSize } from "./main.js";
 import { isMobile } from "./mobile.js";
 import { spriteSheets } from "./spritesheets.js";
 import { exitLocation, powerupLocations } from "./tile.js";
@@ -205,12 +205,20 @@ export class ExitAnimation {
 
 
 ////////////////////
-// UI Animations
-
+// Text animations
 const normalLineWidth = 20;
 const normalFont = "100px Minimal";
 const mobileLineWidth = 15;
 const mobileFont = "70px Minimal";
+
+function animateText(text) {
+    // Use identity matrix to draw the text to the center of canvas
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.strokeText(text, canvas.width / 2, canvas.width / 2);
+    ctx.fillText(text, canvas.width / 2, canvas.width / 2);
+    ctx.restore();
+}
 
 export class DeathReasonAnimation {
     constructor() {
@@ -262,8 +270,7 @@ export class DeathReasonAnimation {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            ctx.strokeText(this.text, canvas.width / 2, canvas.width / 2);
-            ctx.fillText(this.text, canvas.width / 2, canvas.width / 2);
+            animateText(this.text);
         }
     }
 }
@@ -312,7 +319,6 @@ export class LevelHeaderAnimation {
     render() {
         if (this.visible) {
             ctx.fillStyle = `rgba(240, 240, 240, ${this.alpha})`;
-            // ctx.strokeStyle = `rgba(30, 30, 30, ${this.alpha})`;
             ctx.strokeStyle = `rgba(0, 0, 0, ${this.alpha})`;
             
             if (isMobile) {
@@ -326,8 +332,7 @@ export class LevelHeaderAnimation {
             ctx.textBaseline = "middle";
 
             const substring = this.text.substring(0, this.frames);
-            ctx.strokeText(substring, canvas.width / 2, canvas.width / 2);
-            ctx.fillText(substring, canvas.width / 2, canvas.width / 2);
+            animateText(substring);
         }
     }
 }
@@ -390,20 +395,14 @@ export class GameOverAnimation {
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            // Use identity matrix to draw the text to the center
-            // of canvas
-            ctx.save();
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-
             const substring = this.text.substring(0, this.frames);
-            ctx.strokeText(substring, canvas.width / 2, canvas.width / 2);
-            ctx.fillText(substring, canvas.width / 2, canvas.width / 2);
-
-            ctx.restore();
+            animateText(substring);
         }
     }
 }
 
+////////////////////
+// Overlay animations
 export class FadeTransition {
     constructor() {
         this.visible = false;
@@ -443,19 +442,19 @@ export class FadeTransition {
     render() {
         if (this.visible) {
             ctx.fillStyle = `rgba(0, 0, 0, ${this.alpha})`;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, FULL_CANVAS_SIZE, FULL_CANVAS_SIZE);
         }
     }
 }
 
-export class TutorialAnimations {
+export class TutorialAnimation {
     constructor() {
         this.visible = false;
         this.currentFrame = 0;
         this.frames = 7;
         this.keys = new Image();
-        this.keysWidth = 224;
-        this.keysHeight = 320;
+        this.imageWidth = 224;
+        this.imageHeight = 320;
         this.fadeMs = 60;
     }
     
@@ -505,8 +504,8 @@ export class TutorialAnimations {
 
         if (this.visible) {
             ctx.drawImage(this.keys, 
-                this.keysWidth * this.currentFrame, 0, 
-                this.keysWidth, this.keysHeight, canvas.width - this.keysWidth, 0, this.keysWidth, this.keysHeight);
+                this.imageWidth * this.currentFrame, 0, 
+                this.imageWidth, this.imageHeight, canvas.width - this.imageWidth, 0, this.imageWidth, this.imageHeight);
         }
     }
 }
@@ -519,6 +518,7 @@ export class BigBombAnimation {
         this.firstHalf = 37;    // The shattering animation begins on frame 27
         this.spriteSheet = new Image();
         this.animationMs = 60;
+        this.imageHeight = 832;
     }
     
     playLightUp() {
@@ -559,8 +559,64 @@ export class BigBombAnimation {
 
         if (this.visible) {
             ctx.drawImage(this.spriteSheet, 
-                canvas.width * this.currentFrame, 0, 
-                canvas.width, canvas.height, 0, 0, canvas.width, canvas.height);
+                this.imageHeight * this.currentFrame, 0, 
+                this.imageHeight, this.imageHeight, 0, 0, this.imageHeight, this.imageHeight);
         }
     }
+}
+
+///////////////////
+// Shroom?
+export function shroom() {
+    shroomtrig = false;
+    const minSize = 10;
+    const maxSize = 100;
+    let size = minSize;
+    let zoomIn = true;
+    setInterval(() => {
+        if (size < maxSize && zoomIn) {
+            size++;
+        }
+        else if (size === maxSize) {
+            zoomIn = false;
+            size--;
+        }
+        else if (size <= minSize) {
+            zoomIn = true;
+        } else {
+            size--;
+        }
+        // floor.style.backgroundSize = size + '%';
+        floor.style.filter = `sepia(${size}%)`;
+    }, 10);
+
+    let rotation = 0;
+    setInterval(() => {
+        if (rotation < 180) {
+            rotation++
+        } else {
+            rotation = 180;
+        }
+        // floor.style.transform = `rotate(${rotation}deg)`;
+        // canvas.style.transform = `rotate(${rotation}deg)`;
+    }, 20);
+
+    let blur = 1;
+    const maxBlur = 10;
+    let blurring = true;
+    setInterval(() => {
+        if (blur < maxBlur && blurring) {
+            blur++;
+        }
+        else if (blur === maxBlur) {
+            blurring = false;
+            blur--;
+        }
+        else if (blur <= 1) {
+            blurring = true;
+        } else {
+            blur--;
+        }
+        canvas.style.filter = `blur(${blur}px)`;
+    }, 200);
 }

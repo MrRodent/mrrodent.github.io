@@ -1,7 +1,7 @@
 ////////////////////
 // Imports
 import { renderWalls, renderFloor } from "./level.js";
-import { EntranceAnimation, ExitAnimation, locBlinkingAnimation, LevelHeaderAnimation, GameOverAnimation, DeathReasonAnimation, renderEnemyDeaths, TutorialAnimations, BigBombAnimation, FadeTransition } from "./animations.js";
+import { EntranceAnimation, ExitAnimation, locBlinkingAnimation, LevelHeaderAnimation, GameOverAnimation, DeathReasonAnimation, renderEnemyDeaths, TutorialAnimation, BigBombAnimation, FadeTransition } from "./animations.js";
 import { renderPowerups } from "./powerup.js";
 import { renderPlayer } from "./player.js";
 import { renderEnemies } from "./enemy.js";
@@ -15,12 +15,14 @@ import { isMobile, responsivityCheck } from "./mobile.js";
 import { fetchEverything } from "./gamestate.js";
 import { loadTextures } from "./level.js";
 import { loadSpriteSheets } from "./spritesheets.js";
+import { createFloatingText, renderFloatingText, textParticles } from "./particles.js";
 
 
 ////////////////////
 // Globals
 export let canvas;
 export let ctx;
+export const FULL_CANVAS_SIZE = 832;
 export let level = [];
 export let globalPause = true;
 export function setGlobalPause(value) {
@@ -45,9 +47,9 @@ export function setNumOfPlayers(value) {
 ////////////////////
 // Settings
 export const tileSize = 64;
-export const cagePlayer = false;
+export const cagePlayer = true;
 export const cageMultiplayer = false;
-export const bigBombOverlay = false;
+export const bigBombOverlay = true;
 const showTutorial = false;
 const fadeTransitions = true;
 
@@ -67,7 +69,7 @@ export const deathReasonText = new DeathReasonAnimation();
 export const entrance = new EntranceAnimation();
 export const exit = new ExitAnimation();
 export const locBlinkers = new locBlinkingAnimation();
-export const tutorial = new TutorialAnimations();
+export const tutorial = new TutorialAnimation();
 export const bigBomb = new BigBombAnimation();
 export const fadeTransition = new FadeTransition();
 
@@ -117,9 +119,11 @@ function Render(timeStamp)
         levelHeader.render();
         gameOverText.render();
         deathReasonText.render();
-        if (showTutorial) {
+        if (showTutorial && !isMobile) {
             tutorial.render();
         }
+
+        renderFloatingText();
     }
 
     lastTimeStamp = timeStamp
