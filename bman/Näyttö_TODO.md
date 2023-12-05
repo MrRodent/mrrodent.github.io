@@ -10,15 +10,15 @@
 - Oma leveli :white_check_mark:
 - Vihollisten spawnaus :white_check_mark:
 - Powerupien spawnaus :white_check_mark:
-- Valikkojen muokkaus
+- Valikkojen muokkaus :white_check_mark:
   - Valintapainike yksin- tai kaksinpelille :white_check_mark:
 - Joku ilmoitus(vilkku?) minne tileen vihollinen on spawnaamassa
-- Scoret sekä vihollisista, että pelaajista
-  - Pelaajista score tekstin animointi
-- Seinän pudotus/rakennus
-  - Keybindit molemmille
+- Scoret sekä vihollisista, että pelaajista :white_check_mark:
+  - Pelaajista score tekstin animointi :white_check_mark:
+- Seinän pudotus/rakennus :white_check_mark:
+  - Keybindit molemmille :white_check_mark:
   - Materiaali powerup
-- Teksti-partikkeli powerupeille
+- Teksti-partikkeli powerupeille :white_check_mark:
 - How To Play: Kakkospelaajan näppis bindit
 - ...
 
@@ -35,6 +35,7 @@
 
 ###Spritet/Animaatiot
 - CC-BY Lisenssillä olevat spritet uusiksi (Kummitus, Luuranko)
+- Korvataan score-spritet teksti partikkeleilla
 - Kakkospelaajalle sprite :white_check_mark:
 
 ###Muuta

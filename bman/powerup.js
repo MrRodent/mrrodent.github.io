@@ -1,37 +1,55 @@
-import { ctx, level, tileSize } from "./main.js";
+import { ctx, isMultiplayer, level, tileSize } from "./main.js";
 import { levelHeight, levelWidth } from "./gamestate.js";
 import { spriteSheets } from "./spritesheets.js";
+import { createFloatingText } from "./particles.js";
 import { clamp } from "./utils.js";
+import { playAudio, sfxs } from "./audio.js";
 
 export class Powerup
 {
     constructor() {
         this.maxBombs = 1;
-        this.maxRange = 1; 
+        this.maxRange = 1;
+        this.currentWalls = 3;
+        this.maxWalls = 3;
         this.blinker = null;
     }
 
     pickup(tile, player) {
         tile.hasPowerup = false;
+        playAudio(sfxs['POWERUP3']);
 
         if (tile.powerup === "bomb") {
             this.maxBombs += 1;
+            createFloatingText({x: tile.x, y: tile.y}, "+1 Bomb");
         }
         else if (tile.powerup === "range") {
             this.maxRange += 1;
+            createFloatingText({x: tile.x, y: tile.y}, "+1 Range");
         }
 
         else if (tile.powerup === "speed") {
             // TODO: Mikä on sopiva max speed?
             player.speed = clamp(player.speed += 40, 0, 250);
+            createFloatingText({x: tile.x, y: tile.y}, "+Speed");
+        }
+
+        else if (tile.powerup === "material") {
+            // TODO: Montako halutaan per stack?
+            this.currentWalls += 3;
+            createFloatingText({x: tile.x, y: tile.y}, `+3 Materials`);
         }
     }
 }
 
-export const powerupChoices = ["bomb", "range", "speed"];
+export const powerupChoices = ["bomb", "range", "speed", "material"];
 
 export function randomPowerup() {
-    return powerupChoices[Math.floor(Math.random() * powerupChoices.length)];
+    if(isMultiplayer) {
+        return powerupChoices[Math.floor(Math.random() * powerupChoices.length)];
+    } else {
+        return powerupChoices[Math.floor(Math.random() * powerupChoices.length - 1)];
+    }
 }
 
 ////////////////////
@@ -58,6 +76,9 @@ export function renderPowerups()
                 }
                 else if (currentTile.powerup === "speed") {
                     ctx.drawImage(powerupImage, tileSize*2, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
+                }
+                else if (currentTile.powerup === "material") {
+                    ctx.drawImage(powerupImage, tileSize*3, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
                 }
             }
         }
