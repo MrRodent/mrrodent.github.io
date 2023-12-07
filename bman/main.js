@@ -7,15 +7,15 @@ import { renderPlayer } from "./player.js";
 import { renderEnemies } from "./enemy.js";
 import { renderBombs, renderExplosions } from "./bomb.js";
 import { Game } from "./gamestate.js";
-import { MultiplayerGame } from "./multiplayergamestate.js";
+import { MultiplayerGame, renderPVPBlinkers } from "./multiplayergamestate.js";
 import { updateCamera } from "./camera.js";
 import { showDoor, showPauseMenu } from "./page.js";
 import { isMobile, responsivityCheck } from "./mobile.js";
+import { renderFloatingText } from "./particles.js";
 // TODO: Nämä importit voi ottaa myöhemmin pois
 import { fetchEverything } from "./gamestate.js";
 import { loadTextures } from "./level.js";
 import { loadSpriteSheets } from "./spritesheets.js";
-import { createFloatingText, renderFloatingText, textParticles } from "./particles.js";
 
 
 ////////////////////
@@ -47,9 +47,9 @@ export function setNumOfPlayers(value) {
 ////////////////////
 // Settings
 export const tileSize = 64;
-export const cagePlayer = false;
+export const cagePlayer = true;
 export const cageMultiplayer = false;
-export const bigBombOverlay = false;
+export const bigBombOverlay = true;
 const showTutorial = false;
 const fadeTransitions = true;
 
@@ -103,6 +103,7 @@ function Render(timeStamp)
         renderPlayer(timeStamp);
         renderWalls();
         locBlinkers.render();
+        renderPVPBlinkers();
         if (showDoor && !isMultiplayer) {
             exit.render();
             renderPowerups();
