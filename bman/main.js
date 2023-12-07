@@ -47,9 +47,9 @@ export function setNumOfPlayers(value) {
 ////////////////////
 // Settings
 export const tileSize = 64;
-export const cagePlayer = true;
+export const cagePlayer = false;
 export const cageMultiplayer = false;
-export const bigBombOverlay = true;
+export const bigBombOverlay = false;
 const showTutorial = false;
 const fadeTransitions = true;
 
