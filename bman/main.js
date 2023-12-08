@@ -9,7 +9,7 @@ import { renderBombs, renderExplosions } from "./bomb.js";
 import { Game } from "./gamestate.js";
 import { MultiplayerGame, renderPVPBlinkers } from "./multiplayergamestate.js";
 import { updateCamera } from "./camera.js";
-import { showDoor, showPauseMenu, showMainMenu } from "./page.js";
+import { showDoor, showMainMenu, showPauseMenu } from "./page.js";
 import { isMobile, responsivityCheck } from "./mobile.js";
 import { renderFloatingText } from "./particles.js";
 // TODO: Nämä importit voi ottaa myöhemmin pois
@@ -108,7 +108,7 @@ function Render(timeStamp)
             exit.render();
             renderPowerups();
         }
-        if (bigBombOverlay) {
+        if (bigBombOverlay && !isMultiplayer) {
             bigBomb.render();
         }
         renderEnemies(timeStamp);
@@ -120,7 +120,7 @@ function Render(timeStamp)
         levelHeader.render();
         gameOverText.render();
         deathReasonText.render();
-        if (showTutorial && !isMobile) {
+        if (showTutorial && !isMobile && !isMultiplayer) {
             tutorial.render();
         }
 
@@ -139,6 +139,7 @@ async function debugLoad()
     await loadTextures();
     await loadSpriteSheets();
     
+    // game.newGame();
     showMainMenu();
 }
 
