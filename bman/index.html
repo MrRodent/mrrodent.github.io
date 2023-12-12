@@ -92,13 +92,30 @@
                 </ul>
                 <br>
                 <h3>Controls</h3>
-                <ul>
-                    <li>W: Move Up</li>
-                    <li>A: Move Left</li>
-                    <li>S: Move Down</li>
-                    <li>D: Move Right</li>
-                    <li>Space: Place Bomb</li>
-                </ul>
+                    <table>
+                        <tr>
+                            <td><u>Player 1</u></td>
+                            <td><u>Player 2</u></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <li>W: Move Up</li>
+                                <li>A: Move Left</li>
+                                <li>S: Move Down</li>
+                                <li>D: Move Right</li>
+                                <li>Space: Place Bomb</li>
+                                <li>E: Place Wall (PVP Mode Only)</li>
+                            </td>
+                            <td>
+                                <li>Arrow Up: Move Up</li>
+                                <li>Arrow Left: Move Left</li>
+                                <li>Arrow Down: Move Down</li>
+                                <li>Arrow Right: Move Right</li>
+                                <li>Enter: Place Bomb</li>
+                                <li>Right Control: Place Wall (PVP Mode Only)</li>
+                            </td>
+                        </tr>
+                    </table>
                 <br>
                 <h3>Bombs</h3>
                 <ul>
@@ -144,8 +161,9 @@
     <div class="mobile not-selectable">
         <img id="static-overlay" src="assets/vhs_static.gif" alt="VHS static" style="pointer-events: none;">
         <img id="mobile-overlay" src="assets/mobile_test_overlay6.png" alt="Mobile overlay" style="pointer-events: none;">
-        <!-- Mobile: controls -->
         <img id="fullscreen-button" src="assets/mobile/fs_btn.png" alt="fullscreen button">
+        <img id="pause-button" src="assets/mobile/pause_btn.png" alt="pause button">
+        <!-- Mobile: controls -->
         <div class="mobile-controller">
             <div class="mobile-buttons-left">
                 <div>
@@ -153,7 +171,7 @@
                 </div>
                 <div class="d-pad">
                     <div>
-                        <img id="mob-dir-up" src="assets/mobile/up_btn.png"  alt="up button">
+                        <img id="mob-dir-up" src="assets/mobile/up_btn.png" alt="up button">
                         <!-- <button id="mob-dir-up">↑</button> -->
                     </div>
                     <div>

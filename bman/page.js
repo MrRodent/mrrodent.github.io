@@ -59,6 +59,7 @@ const howToPlayMenu = document.querySelector(".how-to-play-container");
 const howToPlayButton = document.getElementById("howToPlayButton");
 const closeButton = document.getElementById("closeButton");
 const mobileController = document.querySelector(".mobile-controller");
+const mobilePauseBtn = document.getElementById('pause-button');
 
 export function showMainMenu()
 {
@@ -73,6 +74,7 @@ export function showMainMenu()
     infoDisplays.style.display = 'grid';
     pvpInfoDisplays.style.display = 'none';
     mobileController.style.visibility = 'hidden';
+    mobilePauseBtn.style.visibility = 'hidden;'
 }
 
 let confirmed = false;
@@ -84,6 +86,7 @@ newGameButton.addEventListener('click', function() {
         infoDisplays.style.visibility = 'visible';
         pvpInfoDisplays.style.display = 'none';
         mobileController.style.visibility = 'visible';
+        mobilePauseBtn.style.visibility = 'visible';
         confirmed = false;
     } else {
         confirmText.style.visibility = 'visible';
@@ -95,6 +98,7 @@ newGameButton.addEventListener('click', function() {
             infoDisplays.style.visibility = 'visible';
             pvpInfoDisplays.style.display = 'none';
             mobileController.style.visibility = 'visible';
+            mobilePauseBtn.style.visibility = 'visible';
             newGameButton.innerText = "New Game";
         }
         confirmed = true;
@@ -116,6 +120,7 @@ continueGameButton.addEventListener('click', function() {
     infoDisplays.style.visibility = 'visible';
     confirmText.style.visibility = 'hidden';
     mobileController.style.visibility = 'visible';
+    mobilePauseBtn.style.visibility = 'visible';
     newGameButton.innerText = "New Game";
     confirmed = false;
 });
@@ -216,11 +221,13 @@ export function showPauseMenu() {
 pauseMenuContinueButton.addEventListener('click', function() {
     pauseMenu.style.visibility = 'hidden';
     mobileController.style.visibility = 'visible';
+    mobilePauseBtn.style.visibility = 'visible';
     setGlobalPause(false);
 });
 
 pauseMenuExitButton.addEventListener('click', function() {
     pauseMenu.style.visibility = 'hidden';
+    mobilePauseBtn.style.visibility = 'hidden';
     showMainMenu();
 
     if(isMultiplayer) {
@@ -233,23 +240,23 @@ pauseMenuExitButton.addEventListener('click', function() {
 // DEBUG & TESTING
 
 // Scale buttons
-let canvasContainer = document.getElementsByClassName("canvas-container");
-let scaleBtn50 = document.getElementById("scale50");
-let scaleBtn75 = document.getElementById("scale75");
-let scaleBtn100 = document.getElementById("scale100");
+const canvasContainer = document.querySelector(".canvas-container");
+const scaleBtn50 = document.getElementById("scale50");
+const scaleBtn75 = document.getElementById("scale75");
+const scaleBtn100 = document.getElementById("scale100");
 
 scaleBtn50.addEventListener("click", scale50);
 scaleBtn75.addEventListener("click", scale75);
 scaleBtn100.addEventListener("click", scale100);
 
 function scale50() {
-    canvasContainer[0].style.cssText = "scale: 50%;";
+    canvasContainer.style.cssText = "scale: 50%;";
 }
 function scale75() {
-    canvasContainer[0].style.cssText = "scale: 75%;";
+    canvasContainer.style.cssText = "scale: 75%;";
 }
 function scale100() {
-    canvasContainer[0].style.cssText = "scale: 100%;";
+    canvasContainer.style.cssText = "scale: 100%;";
 }
 
 // Show door and powerup location

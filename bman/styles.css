@@ -436,6 +436,18 @@ body {
     background: #555; 
 }
 
+table td {
+    width: 250px;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    margin-bottom: 10px;
+}
+
+li {
+    padding: 2px;
+}
+
 /* Floor */
 .floor {
     z-index: -1;
@@ -563,21 +575,15 @@ body {
     border-radius: 50%;
     width: 100px;
     height: 100px;
-    margin-top: 200px;
+    margin-top: 150px;
+    margin-right: 50px;
 }
 
-#fullscreen-button {
-    display: none;
-    z-index: 9999;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
 .mobile-buttons-left {
     position: fixed;
     top: 0;
     left: 0;
-    margin-top: 50px;
+    margin-top: auto;
     margin-left: 50px;
     z-index: 9999;
 }
@@ -586,8 +592,23 @@ body {
     position: fixed;
     top: 0;
     right: 0;
-    margin-right: 50px;
     z-index: 9999;
+}
+
+#fullscreen-button {
+    display: none;
+    z-index: 10000;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#pause-button {
+    display: none;
+    z-index: 10000;
+    position: fixed;
+    top: 0;
+    right: 0;
 }
 
 /* TODO: tablet mode separately */
@@ -617,6 +638,10 @@ body {
     }
 
     #fullscreen-button {
+        display: block;
+    }
+
+    #pause-button {
         display: block;
     }
 

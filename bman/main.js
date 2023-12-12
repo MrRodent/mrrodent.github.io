@@ -9,7 +9,7 @@ import { renderBombs, renderExplosions } from "./bomb.js";
 import { Game } from "./gamestate.js";
 import { MultiplayerGame, renderPVPBlinkers } from "./multiplayergamestate.js";
 import { updateCamera } from "./camera.js";
-import { showDoor, showMainMenu, showPauseMenu } from "./page.js";
+import { showDoor, showPauseMenu } from "./page.js";
 import { isMobile, responsivityCheck } from "./mobile.js";
 import { renderFloatingText } from "./particles.js";
 // TODO: Nämä importit voi ottaa myöhemmin pois
@@ -49,7 +49,7 @@ export function setNumOfPlayers(value) {
 export const tileSize = 64;
 export const cagePlayer = true;
 export const cageMultiplayer = false;
-export const bigBombOverlay = true;
+export const bigBombOverlay = false;
 const showTutorial = false;
 const fadeTransitions = true;
 
@@ -139,8 +139,9 @@ async function debugLoad()
     await loadTextures();
     await loadSpriteSheets();
     
-    // game.newGame();
-    showMainMenu();
+    game.newGame();
+    console.info('Hei maailma')
+    console.log('Mobiilitesti github.io');
 }
 
 ////////////////////
