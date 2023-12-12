@@ -76,12 +76,78 @@ export const tutorial = new TutorialAnimation();
 export const bigBomb = new BigBombAnimation();
 export const fadeTransition = new FadeTransition();
 
-function Render(timeStamp)
-{
-    scale = isMobile ? 0.75 : 1;
-    // deltaTime = isMobile ? FPS_30 : FPS_60;
+// function Render(timeStamp)
+// {
+//     scale = isMobile ? 0.75 : 1;
+//     // deltaTime = isMobile ? FPS_30 : FPS_60;
 
-    // deltaTime = (timeStamp - lastTimeStamp) / 1000;
+//     // deltaTime = (timeStamp - lastTimeStamp) / 1000;
+//     deltaTime = clamp(deltaTime, 0, 1/60);
+//     console.log("dt:", deltaTime, " fps:", 1/deltaTime);
+//     ctx.save();
+
+//     ctx.setTransform(1, 0, 0, 1, 0, 0);
+//     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+//     ctx.restore();
+
+//     if(!globalPause) {
+
+//         updateCamera();
+//         renderFloor();
+//         if (!showDoor && !isMultiplayer) {
+//             exit.render();
+//             renderPowerups();
+//         }
+//         if(!isMultiplayer){
+//             entrance.render();
+//         }
+//         if(isMultiplayer) {
+//             renderPowerups();
+//         }
+//         renderBombs();
+//         renderPlayer(timeStamp);
+//         renderWalls();
+//         locBlinkers.render();
+//         renderPVPBlinkers();
+//         if (showDoor && !isMultiplayer) {
+//             exit.render();
+//             renderPowerups();
+//         }
+//         if (bigBombOverlay && !isMultiplayer) {
+//             bigBomb.render();
+//         }
+//         renderEnemies(timeStamp);
+//         if (fadeTransitions) {
+//             fadeTransition.render();
+//         }
+//         renderExplosions();
+//         renderEnemyDeaths();
+//         levelHeader.render();
+//         gameOverText.render();
+//         deathReasonText.render();
+//         if (showTutorial && !isMobile && !isMultiplayer) {
+//             tutorial.render();
+//         }
+
+//         renderFloatingText();
+//     }
+
+//     lastTimeStamp = timeStamp
+
+//     requestAnimationFrame(Render);
+// }
+
+const maxFPS = 60;
+const frameDelay = 1000 / maxFPS;
+let lastFrameTime = 0;
+
+function Render(currentTime) {
+  const elapsed = currentTime - lastFrameTime;
+
+  // Only render the frame if enough time has passed
+  if (elapsed > frameDelay) {
+    scale = isMobile ? 0.75 : 1;
     deltaTime = clamp(deltaTime, 0, 1/60);
     console.log("dt:", deltaTime, " fps:", 1/deltaTime);
     ctx.save();
@@ -106,7 +172,7 @@ function Render(timeStamp)
             renderPowerups();
         }
         renderBombs();
-        renderPlayer(timeStamp);
+        renderPlayer(currentTime);
         renderWalls();
         locBlinkers.render();
         renderPVPBlinkers();
@@ -117,7 +183,7 @@ function Render(timeStamp)
         if (bigBombOverlay && !isMultiplayer) {
             bigBomb.render();
         }
-        renderEnemies(timeStamp);
+        renderEnemies(currentTime);
         if (fadeTransitions) {
             fadeTransition.render();
         }
@@ -133,10 +199,12 @@ function Render(timeStamp)
         renderFloatingText();
     }
 
-    lastTimeStamp = timeStamp
+    lastFrameTime = currentTime - (elapsed % frameDelay);
+  }
 
-    requestAnimationFrame(Render);
+  requestAnimationFrame(Render);
 }
+
 
 // TODO: Tämä pois kun ei tartteta enää debuggailla
 async function debugLoad()
@@ -146,7 +214,7 @@ async function debugLoad()
     await loadSpriteSheets();
     
     game.newGame();
-    console.info('Playerspeed')
+    console.info('60fps clamp test')
     console.log('Mobiilitesti github.io');
 }
 
