@@ -59,6 +59,8 @@ export let spriteSheet = document.getElementById("sprite-sheet");
 
 ////////////////////
 // Render
+const FPS_30 = 32.2;
+const FPS_60 = 16.6
 let lastTimeStamp = 0;
 export let deltaTime = 16.6; // ~60fps alkuun..
 export let scale = 1;
@@ -76,6 +78,7 @@ export const fadeTransition = new FadeTransition();
 function Render(timeStamp)
 {
     scale = isMobile ? 0.75 : 1;
+    deltaTime = isMobile ? FPS_30 : FPS_60;
 
     deltaTime = (timeStamp - lastTimeStamp) / 1000;
     ctx.save();
