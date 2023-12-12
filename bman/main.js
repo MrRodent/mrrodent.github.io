@@ -143,7 +143,7 @@ async function debugLoad()
     await loadSpriteSheets();
     
     game.newGame();
-    console.info('Hei maailma')
+    console.info('FPS')
     console.log('Mobiilitesti github.io');
 }
 
