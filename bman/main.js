@@ -16,6 +16,7 @@ import { renderFloatingText } from "./particles.js";
 import { fetchEverything } from "./gamestate.js";
 import { loadTextures } from "./level.js";
 import { loadSpriteSheets } from "./spritesheets.js";
+import { clamp } from "./utils.js";
 
 
 ////////////////////
@@ -78,9 +79,11 @@ export const fadeTransition = new FadeTransition();
 function Render(timeStamp)
 {
     scale = isMobile ? 0.75 : 1;
-    deltaTime = isMobile ? FPS_30 : FPS_60;
+    // deltaTime = isMobile ? FPS_30 : FPS_60;
 
-    deltaTime = (timeStamp - lastTimeStamp) / 1000;
+    // deltaTime = (timeStamp - lastTimeStamp) / 1000;
+    deltaTime = clamp(deltaTime, 0, 1/60);
+    console.log("dt:", deltaTime, " fps:", 1/deltaTime);
     ctx.save();
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
