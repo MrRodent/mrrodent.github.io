@@ -1,14 +1,15 @@
-import { ctx, level, tileSize, deltaTime, game, deathReasonText, bigBomb, setGlobalPause, isMultiplayer, spriteSheet } from "./main.js";
+import { ctx, level, tileSize, fixedDeltaTime, game, deathReasonText, setGlobalPause, isMultiplayer } from "./main.js";
 import { lastLevel, levelHeight, levelType, levelWidth } from "./gamestate.js";
-import { getMusicalTimeout, msPerBeat, playAudio, playFootsteps, playTrack, randomSfx, sfxs, stopFootsteps, tracks } from "./audio.js";
+import { getMusicalTimeout, playAudio, playFootsteps, playTrack, randomSfx, sfxs, stopFootsteps, tracks } from "./audio.js";
 import { Bomb, tilesWithBombs } from "./bomb.js";
-import { Powerup } from "./powerup.js";
+import { Powerup, pickupMushroom } from "./pickups.js";
 import { colorTemperatureToRGB, aabbCollision, getTileFromWorldLocation, getSurroundingTiles, clamp } from "./utils.js";
 import { spriteSheets } from "./spritesheets.js";
 import { showGGMenu } from "./page.js";
 
 
-const godMode = false;
+const godMode = true;
+export const playerSpeed = 150;
 
 export const Direction = {
     UP: "Up",
@@ -31,7 +32,7 @@ export const players = [];
 
 class Player
 {
-    constructor(id, startX, startY, keybinds, normalSprite, lanternSprite) {
+    constructor(id, startX, startY, keybinds, normalSprite, lanternSprite, mushroomedSprite) {
         // Spawn point
         this.startX = startX || tileSize;
         this.startY = startY || tileSize;
@@ -44,13 +45,16 @@ class Player
         this.dx = 0;
         this.dy = 0;
 
-        this.speed = 2.5; // pixels/s
-        this.originalSpeed = this.speed;
-        this.direction = Direction.RIGHT;
+        this.speed = playerSpeed; // pixels/s
+        this.direction = Direction.DOWN;
         this.isWalking = false;
 
         // Key binds
         this.keybinds = keybinds;
+        this.moveUpPressed = false;
+        this.moveDownPressed = false;
+        this.moveLeftPressed = false;
+        this.moveRightPressed = false;
 
         // Event listener handles
         this.keyUpHandler = null;
@@ -68,9 +72,10 @@ class Player
         this.spriteSheet = new Image();
         this.normalSprite = normalSprite;
         this.lanternSprite = lanternSprite;
+        this.mushroomedSprite = mushroomedSprite;
         this.spriteSheet.src = this.normalSprite;
         this.frameWidth = 256/4;
-        this.frameHeight = 256/4;
+        this.frameHeight = 288/4;
         this.totalFrames = 4;
         this.currentFrame = 0;
         this.animationSpeed = 150;
@@ -102,9 +107,6 @@ class Player
         const healthPointsContainer = document.getElementById("healthPointsContainer");
         healthPointsContainer.innerHTML = '';
         for(let i = 0; i < this.healthPoints; i++) {
-            // const circle = document.createElement("div");
-            // circle.classList.add("hp-circle");
-            // healthPointsContainer.appendChild(circle);
             healthPointsContainer.innerHTML += '♥';
         }
     }
@@ -122,12 +124,15 @@ class Player
         if (this.isDead) return;
 
         // Play footsteps
-        if (this.dx !== 0.0 || this.dy !== 0.0) {
-            playFootsteps(this.isWalking);
-            this.isWalking = true;
-        } else {
-            this.isWalking = false;
-            stopFootsteps();
+        if(!isMultiplayer)
+        {
+            if (this.dx !== 0.0 || this.dy !== 0.0) {
+                playFootsteps(this.isWalking);
+                this.isWalking = true;
+            } else {
+                this.isWalking = false;
+                stopFootsteps();
+            }
         }
 
         // Only draw this in darker maps
@@ -235,7 +240,7 @@ class Player
                     const upTile = level[ux][uy];
                     const downTile = level[dx][dy];
 
-                    const slideSpeed = this.speed;
+                    const slideSpeed = this.speed * fixedDeltaTime;
                     if (this.dx > 0 ) { // Left
                         if (closestCorner == topLeftCorner) {
                             // Top of player
@@ -313,6 +318,10 @@ class Player
             this.powerup.pickup(playerTile, this);
         }
 
+        if (playerTile.hasMushroom) {
+            pickupMushroom(playerTile, this);
+        }
+
         if (playerTile.isExit) {
             if (playerTile.isOpen) {
                 collides = true;
@@ -336,12 +345,9 @@ class Player
         }
 
         if (!collides) {
-            //this.x = nextX;
-            //this.y = nextY;
             this.x += this.dx;
             this.y += this.dy;
         }
-
     }
 
     updateAnimation(dt, currentTime) {
@@ -417,8 +423,6 @@ class Player
                         if (aabbCollision(bombTile.bomb.collisionBox, p.collisionBox)) {
                             arePlayersOnBomb = true;
                         }
-                        // TODO: Tämä ei välttämättä ole enää ihan oikein,
-                        // jos on useampia pelaajia...
                         if (p.isDead) {
                             bombTile.isWalkable = true;
                             bombTile.isDeadly = false;
@@ -458,8 +462,6 @@ class Player
                         if (aabbCollision(collisionBox, p.collisionBox)) {
                             arePlayersOnTile = true;
                         }
-                        // TODO: Tämä ei välttämättä ole enää ihan oikein,
-                        // jos on useampia pelaajia...
                         if (p.isDead) {
                             tile.isWalkable = true;
                             tile.isDeadly = false;
@@ -477,25 +479,29 @@ class Player
 
     // Movement
     moveUp() {
-        this.dy = -this.speed;
+        this.moveUpPressed = true;
+        this.dy = -this.speed * fixedDeltaTime;
         this.dx = 0;
         this.direction = Direction.UP;
     }
 
     moveLeft() {
-        this.dx = -this.speed;
+        this.moveLeftPressed = true;
+        this.dx = -this.speed * fixedDeltaTime;
         this.dy = 0;
         this.direction = Direction.LEFT;
     }
 
     moveDown() {
-        this.dy = this.speed;
+        this.moveDownPressed = true;
+        this.dy = this.speed * fixedDeltaTime;
         this.dx = 0;
         this.direction = Direction.DOWN;
     }
 
     moveRight() {
-        this.dx = this.speed;
+        this.moveRightPressed = true;
+        this.dx = this.speed * fixedDeltaTime;
         this.dy = 0;
         this.direction = Direction.RIGHT;
     }
@@ -536,14 +542,29 @@ class Player
 
         switch(event.code) {
             case this.keybinds.move_up:
+                this.moveUpPressed = false;
+                //this.dy = 0;
+                break;
             case this.keybinds.move_down:
-                this.dy = 0;
+                this.moveDownPressed = false;
+                //this.dy = 0;
                 break;
 
             case this.keybinds.move_left:
-            case this.keybinds.move_right:
-                this.dx = 0;
+                this.moveLeftPressed = false;
+                //this.dx = 0;
                 break;
+            case this.keybinds.move_right:
+                this.moveRightPressed = false;
+                //this.dx = 0;
+                break;
+        }
+
+        if(!this.moveRightPressed && !this.moveLeftPressed) {
+            this.dx = 0;
+        }
+        if(!this.moveUpPressed && !this.moveDownPressed) {
+            this.dy = 0;
         }
     }
 
@@ -672,10 +693,10 @@ export function spawnPlayers(amount = 1)
 {
     if(amount == 1) {
         // NOTE: startX, startY = null menee aina vasempaan yläkulmaan tileSizen mukaan
-        players.push(new Player(0, null, null, keybinds1, spriteSheets.player1_normal, spriteSheets.player1_lantern));
+        players.push(new Player(0, null, null, keybinds1, spriteSheets.player1_normal, spriteSheets.player1_lantern, spriteSheets.player1_mushroom_effect));
         players[0].bindMobile();
     } else {
-        players.push(new Player(0, null, null, keybinds1, spriteSheets.player1_normal, spriteSheets.player1_lantern));
+        players.push(new Player(0, null, null, keybinds1, spriteSheets.player1_normal, spriteSheets.player1_lantern, spriteSheets.player1_mushroom_effect));
         players.push(new Player(1, (levelWidth - 2) * tileSize, (levelHeight - 2) * tileSize, keybinds2, spriteSheets.player2_normal, spriteSheets.player2_lantern));
     }
 
@@ -706,3 +727,4 @@ export function clearPlayers() {
 
     players.length = 0;
 }
+

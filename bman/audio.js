@@ -2,7 +2,7 @@
 // https://github.com/mdn/webaudio-examples/tree/main/multi-track
 // https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
 
-// NOTE: An internal clock that starts ticking the moment you create an audio context
+// NOTE: An internal clock starts ticking when audio context is created
 let audioCtx = null;
 
 const BPM = 110;
@@ -42,6 +42,7 @@ const SfxURLs = {
     POWERUP: "assets/sfx/powerup1.wav",
     POWERUP2: "assets/sfx/powerup2.wav",
     POWERUP3: "assets/sfx/powerup3.wav",
+    MUSHROOM: "assets/sfx/mushroom.wav",
 }
 
 // Loading function for fetching the audio file and decode the data
@@ -137,11 +138,6 @@ export function stopCurrentTrack() {
     }
 }
 
-
-// TODO: kaksinpelissä äänet häviää.
-//     - laita ensimmäinen kävelijä triggaamaan loop
-//     - lopeta kun molemmat pysähtyy
-// Syncs the footsteps with the track
 let footsteps = null;
 export function playFootsteps(isWalking) {
     if (isWalking) return;

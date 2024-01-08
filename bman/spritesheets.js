@@ -1,34 +1,40 @@
 async function preLoadSpriteSheets() {
     const spritesheets = {
-        player1_normal: "./assets/player.png",
-        player1_lantern: "./assets/player_lantern.png",
+        player1_normal: "./assets/players/player.png",
+        player1_lantern: "./assets/players/player_lantern.png",
+        player1_mushroom_effect: "./assets/players/player_lantern_mushroomeffect.png",
 
-        player2_normal: "./assets/player2.png",
-        player2_lantern: "./assets/player2_lantern.png",
+        player2_normal: "./assets/players/player2.png",
+        player2_lantern: "./assets/players/player2_lantern.png",
 
-        zombie: "./assets/zombie.png",
-        ghost: "./assets/ghost.png",
-        skeleton: "./assets/skeleton.png",
+        zombie: "./assets/enemies/zombie.png",
+        ghost: "./assets/enemies/ghost.png",
+        skeleton: "./assets/enemies/skeleton.png",
+        witch: "./assets/enemies/witch.png",
 
-        zombie_outline: "./assets/zombie_outline.png",
+        zombie_outline: "./assets/enemies/zombie_outline.png",
+        ghost_outline: "./assets/enemies/ghost_outline.png",
+        skeleton_outline: "./assets/enemies/skeleton_outline.png",
+        witch_outline: "./assets/enemies/witch_outline.png",
 
         zombie_death_back:  "./assets/deaths/zombie_death_back.png",
         zombie_death_front: "./assets/deaths/zombie_death_front.png",
         zombie_death_left:  "./assets/deaths/zombie_death_left.png",
         zombie_death_right: "./assets/deaths/zombie_death_right.png",
 
-        ghost_death: "./assets/deaths/ghost_death.png",
+        ghost_death: "./assets/deaths/ghost_death2.png",
 
         skeleton_death_back:  "./assets/deaths/skeleton_death_back.png",
         skeleton_death_front: "./assets/deaths/skeleton_death_front.png",
         skeleton_death_left:  "./assets/deaths/skeleton_death_left.png",
         skeleton_death_right: "./assets/deaths/skeleton_death_right.png",
 
-        bomb: "./assets/bomb.png",
+        bomb: "./assets/items/bomb.png",
+        powerups: "./assets/items/powerups.png",
+        mushroom: "./assets/items/shroom1.png",
         explosion: "./assets/explosion.png",
         wall_animation: "./assets/wall_animation.png",
-        powerups: "./assets/powerups.png",
-        door: "./assets/door_animation.png",
+        door: "./assets/door_animation_night.png",
 
         tutorial_keys: "./assets/tutorial_keys_animation.png",
         big_bomb_overlay: "./assets/big_bomb_overlay.png",

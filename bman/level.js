@@ -2,7 +2,6 @@ import { ctx, tileSize, level } from "./main.js";
 import { levelHeight, levelType, levelWidth } from "./gamestate.js";
 import { drawCoordinates, coordsToggle } from "./page.js";
 import { cameraX, cameraY } from "./camera.js";
-import { shroom } from "./animations.js";
 
 let hardWallTexture = new Image();
 let softWallTexture = new Image();
@@ -21,9 +20,9 @@ async function preLoadTextures() {
             softWall: "./assets/stone_brick_02.png"
         },
         "forest_night": {
-            floor:    "./assets/cobblestone_03.png",
-            hardWall: "./assets/stone_brick_05.png",
-            softWall: "./assets/stone_brick_03.png"
+            floor:    "./assets/tiles/floor_forest_night.png",
+            hardWall: "./assets/tiles/hardwall_forest_night.png",
+            softWall: "./assets/tiles/softwall_forest_night.png"
         },
         "hell": {
             floor:    "./assets/lava_01.png",
@@ -111,16 +110,9 @@ export function renderWalls()
     drawCoordinates(coordsToggle);
 }
 
-let shroomtrig = true;  // TODO: tämä tapahtumaan jossain muualla jos toteutuu
+
 export function renderFloor()
 {
-    if (true) {
-        floor.style.backgroundPosition = cameraX + 'px ' + cameraY + 'px';
-        floor.style.backgroundSize = 'auto';
-    } else {
-        floor.style.backgroundPosition = cameraY + 'px ' + cameraX + 'px';
-        if (shroomtrig) {
-            shroom();
-        }
-    }
+    floor.style.backgroundPosition = cameraX + 'px ' + cameraY + 'px';
+    floor.style.backgroundSize = 'auto';
 }

@@ -2,7 +2,7 @@ import { playAudio, playBirdsong, sfxs } from "./audio.js";
 import { enemies } from "./enemy.js";
 import { lastLevel } from "./gamestate.js";
 import { initHardWallsCanvas, setTextures } from "./level.js";
-import { FULL_CANVAS_SIZE, canvas, ctx, game, locBlinkers, tileSize } from "./main.js";
+import { FULL_CANVAS_SIZE, canvas, ctx, game, globalPause, locBlinkers, tileSize } from "./main.js";
 import { isMobile } from "./mobile.js";
 import { spriteSheets } from "./spritesheets.js";
 import { exitLocation, powerupLocations } from "./tile.js";
@@ -511,6 +511,7 @@ export class TutorialAnimation {
     }
 }
 
+export let isBigBombOver = false;
 export class BigBombAnimation {
     constructor() {
         this.visible = true;
@@ -536,11 +537,12 @@ export class BigBombAnimation {
     }
 
     playShatter() {
-        // TODO: animaatiotestailua
-        setTextures();
-        initHardWallsCanvas();
-        playBirdsong();
-
+        // The first level has special textures on mobile
+        if (isMobile) {
+            setTextures();
+            initHardWallsCanvas();
+        }
+        
         let shatter = setInterval(() => {
             if (this.currentFrame < this.frames) {
                 this.currentFrame++;
@@ -554,6 +556,7 @@ export class BigBombAnimation {
                 enemies.forEach(enemy => {
                     enemy.showSprite();
                 });
+                isBigBombOver = true;
             }
         }, this.animationMs);
     }
@@ -574,9 +577,10 @@ export class BigBombAnimation {
 ///////////////////
 // Shroom
 const canvasContainer = document.querySelector(".canvas-container");
-export function shroom() {
-    shroomtrig = false;
-
+const floor = document.querySelector('.floor');
+export let shroomTrigger = false;
+export function shroom(player) {
+    shroomTrigger = true;
     // Settings
     const minSize = 90;
     const maxSize = 100;
@@ -584,9 +588,12 @@ export function shroom() {
     let rotation = 1;
 
     let blur = 0.1;
-    const maxBlur = 5;
+    const maxBlur = 4;
     let blurring = true;
     let stopBlur = false;
+
+    // Spritesheet
+    player.spriteSheet.src = player.mushroomedSprite;
     
     // Beating blur
     let blurInterval = setInterval(() => {
@@ -614,12 +621,18 @@ export function shroom() {
     
     // Rotation and zoom
     let effectInterval = setInterval(() => {
+        if (globalPause) return;
+        
         if (rotation > 0 && rotation < 360) {
             rotation++
         // Clear all effects after one full rotation
         } else {
             rotation = 0;
             stopBlur = true;
+            shroomTrigger = false;
+            setTimeout(() => {
+                player.spriteSheet.src = player.lanternSprite;
+            }, 1000);
             clearInterval(effectInterval);
         }
         floor.style.transform = `rotate(-${rotation}deg)`;

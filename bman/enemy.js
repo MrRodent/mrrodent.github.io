@@ -1,17 +1,20 @@
-import { ctx, deltaTime, game, globalPause, isMultiplayer, tileSize } from "./main.js";
+import { bigBombOverlay, ctx, fixedDeltaTime, game, globalPause, isMultiplayer, tileSize } from "./main.js";
 import { Direction, players } from "./player.js";
 import { dfs, lerp, getRandomWalkablePointInRadius, getTileFromWorldLocation, aabbCollision, getDistanceToEuclidean } from "./utils.js";
 import { requestPath } from "./pathfinder.js";
 import { tilesWithBombs } from "./bomb.js";
 import { getMusicalTimeout, playAudio, randomSfx, sfxs } from "./audio.js";
-import { EnemyDeathAnimation, deathRow } from "./animations.js";
+import { EnemyDeathAnimation, deathRow, isBigBombOver } from "./animations.js";
 import { spriteSheets } from "./spritesheets.js";
 import { createFloatingText } from "./particles.js";
+import { isMobile } from "./mobile.js";
+import { initPickups } from "./pickups.js";
 
 export const enemyType = {
     ZOMBIE: "zombie",
     GHOST: "ghost",
     SKELETON: "skeleton",
+    WITCH: "witch",
 }
 
 export const movementMode = {
@@ -65,6 +68,7 @@ class Enemy
         this.targetLocation = {x: 0, y: 0};
         this.playerTarget = null;
         this.isChasingPlayer = false;
+        this.patrollingCount = 0;
 
         // Rendering
         this.renderX = this.x;
@@ -73,9 +77,9 @@ class Enemy
 
         // Animations
         this.spriteSheet = new Image();
-        this.frameWidth = 192/3;
-        this.frameHeight = 256/4;
-        this.totalFrames = 3;
+        this.frameWidth = 256/4;
+        this.frameHeight = 288/4;
+        this.totalFrames = 4;
         this.currentFrame = 0;
         this.animationSpeed = 150;
         this.lastTime = 0;
@@ -88,29 +92,53 @@ class Enemy
 
         switch(this.enemyType) {
             case enemyType.ZOMBIE: {
-                this.totalFrames = 4;
-                this.frameWidth = 256/4;
-                this.spriteSheet.src = spriteSheets.zombie;
+                if (bigBombOverlay && !isBigBombOver) {
+                    this.spriteSheet.src = spriteSheets.zombie_outline;
+                } else {
+                    this.spriteSheet.src = spriteSheets.zombie;
+                }
                 this.movementMode = movementMode.PATROL;
-                this.speed = 800;
-                this.score = 200;
+                this.speed = 1000;
+                this.score = 100;
                 this.patrol();
                 break;
             }
             case enemyType.GHOST: {
-                this.spriteSheet.src = spriteSheets.ghost;
+                if (bigBombOverlay && !isBigBombOver) {
+                    this.spriteSheet.src = spriteSheets.ghost_outline;
+                } else {
+                    this.spriteSheet.src = spriteSheets.ghost;
+                }
                 this.movementMode = movementMode.ROAM;
-                this.speed = 500;
-                this.score = 350;
+                this.animationSpeed = 400;
+                this.speed = 600;
+                this.score = 250;
                 this.roam();
                 break;
             }
             case enemyType.SKELETON: {
-                this.spriteSheet.src = spriteSheets.skeleton;
+                if (bigBombOverlay && !isBigBombOver) {
+                    this.spriteSheet.src = spriteSheets.skeleton_outline;
+                } else {
+                    this.spriteSheet.src = spriteSheets.skeleton;
+                }
                 this.movementMode = movementMode.PATROL;
                 this.speed = 400;
                 this.score = 500;
                 this.patrol();
+                break;
+            }
+            case enemyType.WITCH: {
+                if (bigBombOverlay && !isBigBombOver) {
+                    this.spriteSheet.src = spriteSheets.witch_outline;
+                } else {
+                    this.spriteSheet.src = spriteSheets.witch;
+                }
+                this.movementMode = movementMode.FOLLOW;
+                this.speed = 900;
+                this.score = 350;
+                this.followPlayer();
+                this.initWitch();
                 break;
             }
         }
@@ -128,12 +156,22 @@ class Enemy
                 this.spriteSheet.src = spriteSheets.zombie;
                 break;
             }
+        }
+        switch(this.enemyType) {
             case enemyType.GHOST: {
                 this.spriteSheet.src = spriteSheets.ghost;
                 break;
             }
+        }
+        switch(this.enemyType) {
             case enemyType.SKELETON: {
                 this.spriteSheet.src = spriteSheets.skeleton;
+                break;
+            }
+        }
+        switch(this.enemyType) {
+            case enemyType.WITCH: {
+                this.spriteSheet.src = spriteSheets.witch;
                 break;
             }
         }
@@ -145,12 +183,22 @@ class Enemy
                 this.spriteSheet.src = spriteSheets.zombie_outline;
                 break;
             }
+        }
+        switch(this.enemyType) {
             case enemyType.GHOST: {
                 this.spriteSheet.src = spriteSheets.ghost_outline;
                 break;
             }
+        }
+        switch(this.enemyType) {
             case enemyType.SKELETON: {
                 this.spriteSheet.src = spriteSheets.skeleton_outline;
+                break;
+            }
+        }
+        switch(this.enemyType) {
+            case enemyType.WITCH: {
+                this.spriteSheet.src = spriteSheets.witch_outline;
                 break;
             }
         }
@@ -176,7 +224,6 @@ class Enemy
             case enemyType.SKELETON: {
                 this.movementMode = movementMode.PATROL;
                 this.patrol();
-                //this.followPlayer();
                 break;
             }
         }
@@ -222,6 +269,7 @@ class Enemy
         clearInterval(this.timer);
         if(this.currentPath) {
             this.currentPath.length = 0;
+            this.patrollingCount = 0;
         }
         this.isMoving = false;
     }
@@ -348,10 +396,16 @@ class Enemy
         requestPath(this, this.getLocation(), this.targetLocation);
     }
 
-    // TODO: Tää vois kans kattoo uutta polkua tietyn ajan välein,
-    // jos jää esim yhden tai parin tilen sisään jumiin.
     patrol() {
         if (!this.currentPath || this.currentPath.length == 0) {
+            this.getRandomPath();
+            requestPath(this, this.getLocation(), this.targetLocation);
+        }
+        // After patrolling 5 times same route, request new path to avoid
+        // getting stuck inside small areas.
+        else if (this.patrollingCount >= 5) {
+            this.patrollingCount = 0;
+            this.currentPath.length = 0;
             this.getRandomPath();
             requestPath(this, this.getLocation(), this.targetLocation);
         } else {
@@ -360,12 +414,31 @@ class Enemy
             this.targetLocation = temp;
             this.currentPath.reverse();
             this.startMove();
+            this.patrollingCount++;
         }
     }
 
     followPlayer() {
         this.getPlayerLocation();
         requestPath(this, this.getLocation(), this.targetLocation);
+    }
+
+    dropMushroom() {
+        const tile = getTileFromWorldLocation(this);
+        if (!tile.hasMushroom) {
+            tile.hasMushroom = true;
+            initPickups();
+        }
+    }
+
+    initWitch() {
+        this.dropMushroom();
+        
+        if (!this.mushroomInterval) {
+            this.mushroomInterval = setInterval(() => {
+                this.dropMushroom();
+            }, 13000);
+        }
     }
 
     die(playerID) {
@@ -376,41 +449,11 @@ class Enemy
 
         if(!isMultiplayer)
         {
-            switch (this.enemyType) {
-                case enemyType.ZOMBIE: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    break;
-                }
-                case enemyType.GHOST: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    game.increaseScore(this.score);
-                    break;
-                }
-                case enemyType.SKELETON: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    game.increaseScore(this.score);
-                    break;
-                }
-            }
+            game.increaseScore(this.score);
         } else {
-            switch (this.enemyType) {
-                case enemyType.ZOMBIE: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    game.increaseScore(-1, this.score);
-                    break;
-                }
-                case enemyType.GHOST: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    game.increaseScore(-1, this.score);
-                    break;
-                }
-                case enemyType.SKELETON: {
-                    createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
-                    game.increaseScore(-1, this.score);
-                    break;
-                }
-            }
+            game.increaseScore(-1, this.score);
         }
+        createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
 
         let result = findEnemyById(this.id);
         enemies.splice(result.index, 1);
@@ -655,7 +698,9 @@ export function renderEnemies(timeStamp)
 
             if(!enemy.collides) {
                 // Smooth rendering
-                enemy.t += deltaTime * (1 / (enemy.speed / 1000));
+                // const updateInterval = isMobile ? 500 : 1000;
+                const updateInterval = 1000;
+                enemy.t += fixedDeltaTime * (1 / (enemy.speed / updateInterval));
                 enemy.t = Math.min(enemy.t, 1); // NEED TO CLAMP THIS ONE TOO!
 
                 x = lerp(enemy.x, enemy.renderX, enemy.t);

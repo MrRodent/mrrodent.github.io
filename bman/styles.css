@@ -1,6 +1,9 @@
 :root {
-    --bg: #303030;
+    --site-bg: #303030;
+    --menu-bg: rgba(0, 0, 0, 0.95);
+    --container-bg: rgba(0, 0, 0, 0.6);
     --lightgrey: #444;
+    --mobile-btn-size: 60px;
   }
 
 * {
@@ -26,7 +29,7 @@
 }
 
 body {
-    background-color: var(--bg);
+    background-color: var(--site-bg);
 }
 
 .text-display {
@@ -112,6 +115,14 @@ body {
     justify-content: space-evenly;
 }
 
+.menu-background {
+    visibility: hidden;
+    position: absolute;
+    height: 832px;
+    width: 832px;
+    background: var(--menu-bg);
+}
+
 /* Play Game */
 .play-game-container {
     visibility: hidden; /* TODO: Takas visibleks kun ei tartte debuggailla */
@@ -162,7 +173,6 @@ body {
     position: absolute;
     width: 832px;
     height: 832px;
-    background: black;
     z-index: 999;
 }
 
@@ -177,13 +187,13 @@ body {
 }
 
 .main-menu-content h1 {
-    color: white;
+    text-shadow: 0.1em 0.1em 0.1em rgba(200, 200, 200, 0.4);
+    padding-bottom: 20px;
 }
 
-.main-menu-content .main-menu-button-container {
+.main-menu-button-container {
     display: flex;
     flex-direction: column;
-    padding-top: 20px;
     height: 33%;
     justify-content: space-evenly;
 }
@@ -191,8 +201,10 @@ body {
 .main-menu-content button {
     width: 200px;
     height: 50px;
+    border-radius: 2px;
     background: black;
     color: white;
+    text-shadow: 0.1em 0.1em 0.1em rgba(200, 200, 200, 0.2);
 }
 
 .main-menu-content button:disabled {
@@ -217,9 +229,6 @@ body {
 .pause-menu-container {
     visibility: hidden;
     position: absolute;
-    width: 832px;
-    height: 832px;
-    background: black;
     z-index: 999;
 }
 
@@ -259,9 +268,6 @@ body {
 .game-over-container {
     visibility: hidden;
     position: absolute;
-    width: 832px;
-    height: 832px;
-    background: black;
     z-index: 999;
 }
 
@@ -452,8 +458,6 @@ li {
 .floor {
     z-index: -1;
     position: absolute;
-    /* TODO: tarpeeton laittaa heti alkuun taustakuvaa? */
-    /* background-image: url('./assets/grass_01.png'); */
     background-color: black;
     background-repeat: repeat;
     width: 832px;
@@ -470,7 +474,7 @@ li {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    opacity: 0.03;
+    opacity: 0.0;
 }
 
 #mobile-overlay {
@@ -481,8 +485,6 @@ li {
     left: 0;
     width: 100%;
     height: 100%;
-    /* TODO: pitääkkö object-fit vai ei */
-    /* object-fit: cover; */
 }
 
 #portrait-prompt {
@@ -490,9 +492,7 @@ li {
 }
 
 /* Portrait mode prompt */
-/* TODO: 700px on vaan ikkunan koon testailuun (vähän pienempi kuin labyrintti) */
 @media only screen and (orientation: portrait) and (max-width: 700px) {
-    /* TODO: make sure that not scrollable */
     html, body {
         overflow: hidden;
         height: auto;
@@ -549,22 +549,22 @@ li {
 }
 
 .mobile-controller img {
-    width: 50px;
-    height: 50px;
+    width: var(--mobile-btn-size);
+    height: var(--mobile-btn-size);
     opacity: 0.95;
     box-shadow: -1px -1px 30px rgba(200, 210, 200, 0.2);
 }
 
 #mob-dir-left {
-    margin-left: -25px;
+    margin-left: -30px;
 }
 
 #mob-dir-right {
-    margin-left: 50px;
+    margin-left: var(--mobile-btn-size);
 }
 
 #mob-dir-up, #mob-dir-down {
-    margin-left: 25px;
+    margin-left: 30px;
 }
 
 .d-pad {
@@ -575,8 +575,8 @@ li {
     border-radius: 50%;
     width: 100px;
     height: 100px;
-    margin-top: 150px;
-    margin-right: 50px;
+    margin-top: 180px;
+    margin-right: 10px;
 }
 
 .mobile-buttons-left {
@@ -584,7 +584,7 @@ li {
     top: 0;
     left: 0;
     margin-top: auto;
-    margin-left: 50px;
+    margin-left: 35px;
     z-index: 9999;
 }
 
@@ -611,8 +611,7 @@ li {
     right: 0;
 }
 
-/* TODO: tablet mode separately */
-/* Widest screen emulations on firefox: */
+/* References: */
 /* iPadOS 14.7.1: 810px */
 /* iPhone 12/13 Pro Max iOS 14.6: 428px */
 @media only screen and (orientation: landscape) and (max-height: 428px) {
@@ -623,6 +622,34 @@ li {
     
     body {
         background-color: #101010;
+    }
+
+    .main-menu-container {
+        width: auto;
+        height: auto;
+    }
+
+    .main-menu-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        align-content: center;
+    }
+
+    .main-menu-content h1 {
+        padding-top: 10%;
+        padding-bottom: 0;
+    }
+
+    .main-menu-button-container {
+        padding-top: 0;
+        padding-bottom: 10%;
+    }
+
+    .main-menu-button-container button {
+        border-radius: 3%;
     }
 
     #mobile-overlay {
@@ -684,6 +711,22 @@ li {
         position: fixed;
         right: 20%;
         top: 10%;
+    }
+
+    .how-to-play-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .how-to-play-content {
+        padding-top: 5%;
+        padding-bottom: 5%;
+        padding-left: 10%;
+        padding-right: 18%;
+    }
+
+    .how-to-play-desktop-controls {
+        display: none;
     }
 
     #PVPGameButton {

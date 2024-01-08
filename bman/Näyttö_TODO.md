@@ -1,11 +1,15 @@
-#TODO
+# TODO
 
-###Mobiili-supportti yksinpeli-modelle(Tommi)
+### Mobiili-supportti yksinpeli-modelle(Tommi)
+- Kameran toiminta mobiilille :white_check_mark:
+- Controlleri :white_check_mark:
 - Style/CSS/Canvas
-- Controlleri
-- ...
+  - Canvaksen koko responsiiviseksi :white_check_mark:
+  - Valikoiden sovittaminen mobiilille :white_check_mark:
+  - How To Playn sovittaminen ja sektiointi mobiilille :white_check_mark:
+  
 
-###Paikallinen kaksinpeli-mode(Tomi)
+### Paikallinen kaksinpeli-mode(Tomi)
 - GameStateen säännöt miten peli etenee jos toinen pelaajista kuolee jne. :white_check_mark:
 - Oma leveli :white_check_mark:
 - Vihollisten spawnaus :white_check_mark:
@@ -19,25 +23,25 @@
   - Keybindit molemmille :white_check_mark:
   - Materiaali powerup :white_check_mark:
 - Teksti-partikkeli powerupeille :white_check_mark:
-- How To Play: Kakkospelaajan näppis bindit
-- ...
+- How To Play: Kakkospelaajan näppis bindit :white_check_mark:
 
-###Optimointi
-- Voidaanko vielä nopeuttaa renderöintiä?
-- (Mahdollista) Turhaa laskentaa ja brancheja pois sieltä missä sitä ei tarvita
-- Voiko jotain olemassa olevia rutiineja nopeuttaa/toteuttaa järkevämmin?
+### Optimointi
+- Voidaanko vielä nopeuttaa renderöintiä? :white_check_mark:
+  - Offscreen bufferi seinille :white_check_mark:
+  - Offscreen bufferi powerupeille :white_check_mark:
 
-###Bugeja
+### Bugeja
 - Canvas API ryhmätyöstä jääneiden bugien korjauksia
   - Cage ei enää aina pelaa jostain syystä
   - "Vilkku" jää joskus päälle, kun vaihtaa modea :white_check_mark:
-  - Näkymättömiä satunnaisia pommeja
   - DeltaTime pelaajan liikuttelussa :white_check_mark:
 
-###Spritet/Animaatiot
-- CC-BY Lisenssillä olevat spritet uusiksi (Kummitus, Luuranko)
+### Spritet/Animaatiot
+- CC-BY Lisenssillä olevat spritet uusiksi
+  - Kummitus
+  - Luuranko
 - Korvataan score-spritet teksti partikkeleilla :white_check_mark:
 - Kakkospelaajalle sprite :white_check_mark:
 
-###Muuta
+### Muuta
 - MIT-lisenssi

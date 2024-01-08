@@ -9,7 +9,7 @@ import { updateP1Score, updateP2Score, updatePVPTimerDisplay } from "./page.js";
 import { clearPlayers, findPlayerById, players, resetPlayerPositions, spawnPlayers } from "./player.js";
 import { createTiles, powerupLocations} from "./tile.js";
 import { getRandomWalkablePoint } from "./utils.js";
-import { initPowerups, randomPowerup } from "./powerup.js";
+import { initPickups, randomPowerup } from "./pickups.js";
 import { createFloatingText } from "./particles.js";
 import { locBlinkingAnimation } from "./animations.js";
 
@@ -87,7 +87,9 @@ export class MultiplayerGame extends Game
         this.points = 1000; // Points per pvp kill
         this.timerHandle = null;
         this.enemySpawnRate = 10;
+        this.enemySpawnTimerHandle = null;
         this.powerupSpawnrate = 10;
+        this.powerupSpawnTimerHandle = null;
         this.seconds = 0;
         this.minutes = 0;
     }
@@ -114,11 +116,11 @@ export class MultiplayerGame extends Game
                 pvpBlinkers.push(blinker);
 
                 let counter = 0;
-                let blinkInterval = setInterval(() => {
+                this.enemySpawnTimerHandle = setInterval(() => {
                     if(counter >= 5) {
                         blinker.stopBlinking();
                         counter = 0;
-                        clearInterval(blinkInterval);
+                        clearInterval(this.enemySpawnTimerHandle);
                         spawnEnemyByTypeAtLocation(enemyType.ZOMBIE, location);
                     }
                     counter++;
@@ -135,15 +137,15 @@ export class MultiplayerGame extends Game
                     pvpBlinkers.push(blinker);
 
                     let counter = 0;
-                    let blinkInterval = setInterval(() => {
+                    this.powerupSpawnTimerHandle = setInterval(() => {
                         if(counter >= 3) {
                             blinker.stopBlinking()
                             counter = 0;
-                            clearInterval(blinkInterval);
+                            clearInterval(this.powerupSpawnTimerHandle);
                             tile.powerup = randomPowerup();
                             tile.hasPowerup = true;
                             powerupLocations.push(tile);
-                            initPowerups();
+                            initPickups();
                         }
 
                         counter++;
@@ -154,6 +156,13 @@ export class MultiplayerGame extends Game
     }
 
     over() {
+        if(this.enemySpawnTimerHandle) {
+            clearInterval(this.enemySpawnTimerHandle);
+        }
+        if(this.powerupSpawnTimerHandle) {
+            clearInterval(this.powerupSpawnTimerHandle);
+        }
+        clearEnemies();
         pvpBlinkers.length = 0;
         if(this.timerHandle) {
             clearInterval(this.timerHandle);
@@ -220,7 +229,7 @@ export class MultiplayerGame extends Game
             throw new Error("Failed to create level");
         }
         initHardWallsCanvas();
-        initPowerups();
+        initPickups();
         setGlobalPause(false);
     }
 
@@ -253,7 +262,7 @@ export class MultiplayerGame extends Game
                 throw new Error("Failed to create level");
             }
             initHardWallsCanvas();
-            initPowerups();
+            initPickups();
             setGlobalPause(false);
         
             this.initLevel();

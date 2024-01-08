@@ -1,13 +1,14 @@
-import { playTrack, loadAudioFiles, tracks, stopBirdsong } from "./audio.js";
+import { playTrack, loadAudioFiles, tracks, stopBirdsong, playBirdsong } from "./audio.js";
 import { clearBombs } from "./bomb.js";
 import { setCameraX, setCameraY } from "./camera.js";
 import { clearEnemies, enemies, spawnEnemies } from "./enemy.js";
 import { setTextures, initHardWallsCanvas } from "./level.js";
-import { initPowerups } from "./powerup.js";
+import { initPickups } from "./pickups.js";
 import { level, exit, levelHeader, entrance, gameOverText, setGlobalPause, tutorial, bigBomb, fadeTransition, bigBombOverlay } from "./main.js";
 import { showGameOverMenu, updateLevelDisplay, updateScoreDisplay } from "./page.js";
 import { clearPlayers, players, resetPlayerPositions, spawnPlayers } from "./player.js";
 import { createTiles, exitLocation} from "./tile.js";
+import { isMobile } from "./mobile.js";
 
 export let pause = false;
 
@@ -99,8 +100,10 @@ export class Game {
             
             // Enemies show only outlines during the big bomb overlay
             if (bigBombOverlay && this.level === 1 && !this.firstBombExploded) {
-                setTextures("limbo");
-                initHardWallsCanvas();
+                if (isMobile) {
+                    setTextures("limbo");
+                    initHardWallsCanvas();
+                }
                 enemies.forEach(enemy => {
                     enemy.showOutline();
                 });
@@ -119,6 +122,7 @@ export class Game {
     newLevel() {
         if (this.level === 1) {
             tutorial.playAnimation();
+            playBirdsong();
             bigBomb.visible = true;
         } else {
             if (tutorial.visible) {
@@ -169,7 +173,7 @@ export class Game {
             throw new Error("Failed to create level");
         }
         initHardWallsCanvas();
-        initPowerups();
+        initPickups();
         setGlobalPause(false);
     }
 

@@ -17,8 +17,9 @@
     "1": {
         "enemies": {
             "zombie": 1,
-            "ghost": 0,
-            "skeleton": 0
+            "ghost": 1,
+            "skeleton": 1,
+            "witch": 1
         },
         "tiles": {
             "width": 13,

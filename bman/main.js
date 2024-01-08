@@ -1,8 +1,8 @@
 ////////////////////
 // Imports
 import { renderWalls, renderFloor } from "./level.js";
-import { EntranceAnimation, ExitAnimation, locBlinkingAnimation, LevelHeaderAnimation, GameOverAnimation, DeathReasonAnimation, renderEnemyDeaths, TutorialAnimation, BigBombAnimation, FadeTransition } from "./animations.js";
-import { renderPowerups } from "./powerup.js";
+import { EntranceAnimation, ExitAnimation, locBlinkingAnimation, LevelHeaderAnimation, GameOverAnimation, DeathReasonAnimation, renderEnemyDeaths, TutorialAnimation, BigBombAnimation, FadeTransition, isBigBombOver } from "./animations.js";
+import { renderPickups } from "./pickups.js";
 import { renderPlayer } from "./player.js";
 import { renderEnemies } from "./enemy.js";
 import { renderBombs, renderExplosions } from "./bomb.js";
@@ -61,10 +61,10 @@ export let spriteSheet = document.getElementById("sprite-sheet");
 ////////////////////
 // Render
 let lastTimeStamp = 0;
-export let deltaTime = 16.6; // ~60fps alkuun..
+let updateHz = 60; // Determines how often the movement/"physics" should update.
+const frameDelay = 1000 / updateHz;
+export let fixedDeltaTime = 1000 / updateHz;
 export let scale = 1;
-const maxFPS = 60;
-const frameDelay = 1000 / maxFPS;
 
 export const levelHeader = new LevelHeaderAnimation();
 export const gameOverText = new GameOverAnimation();
@@ -79,13 +79,15 @@ export const fadeTransition = new FadeTransition();
 function Render(timeStamp)
 {
     scale = isMobile ? 0.75 : 1;
+    updateHz = isMobile ? 30 : 60;
+
     const elapsed = timeStamp - lastTimeStamp;
+    fixedDeltaTime = clamp(fixedDeltaTime, 0, 1/updateHz);
+    //console.log("dt:", fixedDeltaTime, " fps:", 1/fixedDeltaTime, " maxFPS:", updateHz);
     
     // Render only if enough time has passed
     if (elapsed > frameDelay) {
 
-        deltaTime = clamp(deltaTime, 0, 1/60);
-        // console.log("dt:", deltaTime, " fps:", 1/deltaTime);
         ctx.save();
     
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -98,27 +100,38 @@ function Render(timeStamp)
             renderFloor();
             if (!showDoor && !isMultiplayer) {
                 exit.render();
-                renderPowerups();
+                renderPickups();
             }
             if(!isMultiplayer){
                 entrance.render();
             }
             if(isMultiplayer) {
-                renderPowerups();
+                renderPickups();
             }
             renderBombs();
             renderPlayer(timeStamp);
+            if (!bigBombOverlay) {
+                renderEnemies(timeStamp);
+            }
+            else if (bigBombOverlay && isBigBombOver) {
+                renderEnemies(timeStamp);
+            }
+            // We want to render the walls here so that the shadows go under them
             renderWalls();
+
+            if (bigBombOverlay && !isMultiplayer) {
+                bigBomb.render();
+            }
+            // Enemies outlines rendered on top of the overlay
+            if (bigBombOverlay && !isBigBombOver) {
+                renderEnemies(timeStamp);
+            }
             locBlinkers.render();
             renderPVPBlinkers();
             if (showDoor && !isMultiplayer) {
                 exit.render();
-                renderPowerups();
+                renderPickups();
             }
-            if (bigBombOverlay && !isMultiplayer) {
-                bigBomb.render();
-            }
-            renderEnemies(timeStamp);
             if (fadeTransitions) {
                 fadeTransition.render();
             }
@@ -147,7 +160,6 @@ async function debugLoad()
     await loadTextures();
     await loadSpriteSheets();
     
-    console.log('Maxfps 60 testi');
     game.newGame();
 }
 
@@ -155,15 +167,14 @@ async function debugLoad()
 // DOM
 document.addEventListener("DOMContentLoaded", function ()
 {
-    responsivityCheck();
     canvas = document.getElementById("canvas");
     if (canvas) {
         ctx = canvas.getContext("2d");
         if (ctx) {
             // TODO: Tämä pois kun ei tartteta enää debuggailla
             debugLoad();
-            
             Render();
+            responsivityCheck();
         } else {
             throw new Error("Could not find ctx object.");
         }

@@ -4,7 +4,10 @@ import { spriteSheets } from "./spritesheets.js";
 import { createFloatingText } from "./particles.js";
 import { clamp } from "./utils.js";
 import { playAudio, sfxs } from "./audio.js";
+import { shroom, shroomTrigger } from "./animations.js";
 
+////////////////////
+// Powerups
 export class Powerup
 {
     constructor() {
@@ -13,11 +16,14 @@ export class Powerup
         this.currentWalls = 3;
         this.maxWalls = 3;
         this.blinker = null;
+        // TODO: Mikä on sopiva max speed?
+        this.maxSpeed = 200;
+        this.extraSpeed = 20;
     }
 
     pickup(tile, player) {
         tile.hasPowerup = false;
-        initPowerups();
+        initPickups();
         playAudio(sfxs['POWERUP3']);
 
         if (tile.powerup === "bomb") {
@@ -30,13 +36,11 @@ export class Powerup
         }
 
         else if (tile.powerup === "speed") {
-            // TODO: Mikä on sopiva max speed?
-            player.speed = clamp(player.speed += 0.5, 0, 5);
-            createFloatingText({x: tile.x, y: tile.y}, "+Speed");
+            player.speed = clamp(player.speed += this.extraSpeed, 0, this.maxSpeed);
+            createFloatingText({x: tile.x, y: tile.y}, "+ Speed");
         }
 
         else if (tile.powerup === "material") {
-            // TODO: Montako halutaan per stack?
             this.currentWalls += 3;
             createFloatingText({x: tile.x, y: tile.y}, `+3 Materials`);
         }
@@ -61,19 +65,37 @@ export function randomPowerup() {
 }
 
 ////////////////////
+// Mushrooms
+export function pickupMushroom(tile, player) {
+    if (shroomTrigger) return;
+    
+    tile.hasMushroom = false;
+    initPickups();
+    playAudio(sfxs['MUSHROOM']);
+
+    // Trigger shroom animation
+    shroom(player);
+}
+
+////////////////////
 // Renders
-let powerupsCanvas = document.createElement('canvas');
-let powerupsCtx = powerupsCanvas.getContext('2d');
+let pickupsCanvas = document.createElement('canvas');
+let pickupsCtx = pickupsCanvas.getContext('2d');
 
 const powerupImage = new Image();
-export function initPowerups()
+const mushroomImage = new Image();
+export function initPickups()
 {
-    powerupsCanvas.width = levelWidth * tileSize;
-    powerupsCanvas.height = levelHeight * tileSize;
-    powerupsCtx.clearRect(0, 0, powerupsCanvas.width, powerupsCanvas.height);
+    pickupsCanvas.width = levelWidth * tileSize;
+    pickupsCanvas.height = levelHeight * tileSize;
+    pickupsCtx.clearRect(0, 0, pickupsCanvas.width, pickupsCanvas.height);
     
     if (!powerupImage.src) {
         powerupImage.src = spriteSheets.powerups;
+    }
+
+    if (!mushroomImage.src) {
+        mushroomImage.src = spriteSheets.mushroom;
     }
 
     for (let x = 0; x < levelWidth; x++) {
@@ -84,23 +106,27 @@ export function initPowerups()
 
             if (currentTile.hasPowerup) {
                 if (currentTile.powerup === "bomb") {
-                    powerupsCtx.drawImage(powerupImage, 0, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
+                    pickupsCtx.drawImage(powerupImage, 0, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
                 }
                 else if (currentTile.powerup === "range") {
-                    powerupsCtx.drawImage(powerupImage, tileSize, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
+                    pickupsCtx.drawImage(powerupImage, tileSize, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
                 }
                 else if (currentTile.powerup === "speed") {
-                    powerupsCtx.drawImage(powerupImage, tileSize*2, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
+                    pickupsCtx.drawImage(powerupImage, tileSize*2, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
                 }
                 else if (currentTile.powerup === "material") {
-                    powerupsCtx.drawImage(powerupImage, tileSize*3, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
+                    pickupsCtx.drawImage(powerupImage, tileSize*3, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
                 }
+            }
+
+            if (currentTile.hasMushroom) {
+                pickupsCtx.drawImage(mushroomImage, 0, 0, tileSize, tileSize, xCoord, yCoord, tileSize, tileSize);
             }
         }
     }
 }
 
-export function renderPowerups()
+export function renderPickups()
 {
-    ctx.drawImage(powerupsCanvas, 0, 0);
+    ctx.drawImage(pickupsCanvas, 0, 0);
 }
