@@ -32,14 +32,14 @@
 
 ### Bugeja
 - Canvas API ryhmätyöstä jääneiden bugien korjauksia
-  - Cage ei enää aina pelaa jostain syystä
+  - Cage ei enää aina pelaa jostain syystä :white_check_mark:
   - "Vilkku" jää joskus päälle, kun vaihtaa modea :white_check_mark:
   - DeltaTime pelaajan liikuttelussa :white_check_mark:
 
 ### Spritet/Animaatiot
 - CC-BY Lisenssillä olevat spritet uusiksi
-  - Kummitus
-  - Luuranko
+  - Kummitus :white_check_mark:
+  - Luuranko :white_check_mark:
 - Korvataan score-spritet teksti partikkeleilla :white_check_mark:
 - Kakkospelaajalle sprite :white_check_mark:
 

@@ -1,4 +1,4 @@
-import { playAudio, playBirdsong, sfxs } from "./audio.js";
+import { playAudio, sfxs } from "./audio.js";
 import { enemies } from "./enemy.js";
 import { lastLevel } from "./gamestate.js";
 import { initHardWallsCanvas, setTextures } from "./level.js";
@@ -60,6 +60,27 @@ export class EnemyDeathAnimation {
                     }
                     case "Right": {
                         this.spriteSheet.src = spriteSheets.skeleton_death_right;
+                        break;
+                    }
+                }
+                break;
+            }
+            case "witch": {
+                switch(direction) {
+                    case "Up": {
+                        this.spriteSheet.src = spriteSheets.witch_death_back;
+                        break;
+                    }
+                    case "Down": {
+                        this.spriteSheet.src = spriteSheets.witch_death_front;
+                        break;
+                    }
+                    case "Left": {
+                        this.spriteSheet.src = spriteSheets.witch_death_left;
+                        break;
+                    }
+                    case "Right": {
+                        this.spriteSheet.src = spriteSheets.witch_death_right;
                         break;
                     }
                 }

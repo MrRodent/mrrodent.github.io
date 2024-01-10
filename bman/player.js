@@ -8,7 +8,7 @@ import { spriteSheets } from "./spritesheets.js";
 import { showGGMenu } from "./page.js";
 
 
-const godMode = true;
+const godMode = false;
 export const playerSpeed = 150;
 
 export const Direction = {
@@ -46,6 +46,7 @@ class Player
         this.dy = 0;
 
         this.speed = playerSpeed; // pixels/s
+        this.originalSpeed = this.speed;
         this.direction = Direction.DOWN;
         this.isWalking = false;
 
@@ -169,6 +170,12 @@ class Player
 
         let collides = false;
         for (let i = 0; i < tilesToCheck.length; i++) {
+
+            // Exit the loop early if player stands on deadly tile.
+            if(playerTile.isDeadly) {
+                break;
+            }
+
             const tileBox = {x: tilesToCheck[i].x , y: tilesToCheck[i].y , w: tileSize, h: tileSize};
 
             if (!tilesToCheck[i].isWalkable && aabbCollision(this.collisionBox, tileBox)) {
@@ -418,7 +425,13 @@ class Player
                 // Checks whether any player is still standing on the bomb after it was dropped.
                 let posCheck = setInterval(() => {
                     let arePlayersOnBomb = false;
-                    
+
+                    if(bombTile.bomb.hasExploded) {
+                        bombTile.isWalkable = true;
+                        bombTile.isDeadly = false;
+                        clearInterval(posCheck);
+                    }
+
                     players.forEach(p => {
                         if (aabbCollision(bombTile.bomb.collisionBox, p.collisionBox)) {
                             arePlayersOnBomb = true;
@@ -444,6 +457,7 @@ class Player
         if(isMultiplayer) {
             if(this.powerup.currentWalls > 0)
             {
+                playAudio(sfxs['BUILD1']);
                 this.powerup.currentWalls--;
                 this.powerup.currentWalls = clamp(this.powerup.currentWalls, 0, this.powerup.maxWalls);
                 
@@ -455,6 +469,11 @@ class Player
                 // Checks whether any player is still standing on the tile after it was dropped.
                 let posCheck = setInterval(() => {
                     let arePlayersOnTile = false;
+
+                    if(tile.type == "Floor") {
+                        tile.isWalkable = true;
+                        clearInterval(posCheck);
+                    }
 
                     const collisionBox = { x: tile.x, y: tile.y, w: tileSize, h: tileSize };
 
@@ -615,6 +634,7 @@ class Player
 
         if(isMultiplayer) {
             if (!this.isDead) {
+                playAudio(sfxs['DEATH']);
                 this.isDead = true;
                 game.updateScore(this.id, instigator, enemyWhoKilled);
                 game.restartLevel();
@@ -671,7 +691,7 @@ export const keybinds2 = {
     move_left: "ArrowLeft",
     move_right: "ArrowRight",
     drop_bomb: "Enter",
-    build: "ControlRight"
+    build: "Backspace"
 };
 
 // Finds a player with given id and returns it
