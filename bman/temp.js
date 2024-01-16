@@ -1,80 +1,46 @@
-    // Movement
-    moveUp() {
-        this.dy = -this.speed * deltaTime;
-        this.dx = 0;
-        this.direction = Direction.UP;
+restartLevel()
+{
+    // Check whether a player won the game
+    if (this.player1Score >= this.scoreGoal || this.player2Score >= this.scoreGoal) { 
+        this.isOver = true;
+        setTimeout(() => {
+            if (this.player1Score === this.player2Score) {
+                showGGMenu(0, this.player1Score)
+            }
+            else if (this.player1Score > this.player1Score) {
+                showGGMenu(1, this.player1Score)
+            } else {
+                showGGMenu(2, this.player2Score)
+            }
+        }, 4000);
     }
+    if (this.isOver) return;
 
-    moveLeft() {
-        this.dx = -this.speed * deltaTime;
-        this.dy = 0;
-        this.direction = Direction.LEFT;
-    }
+    // Prevent level restarting twice, if both players die at same time.
+    if(this.restaring) return;
 
-    moveDown() {
-        this.dy = this.speed * deltaTime;
-        this.dx = 0;
-        this.direction = Direction.DOWN;
-    }
+    this.restaring = true;
 
-    moveRight() {
-        this.dx = this.speed * deltaTime;
-        this.dy = 0;
-        this.direction = Direction.RIGHT;
-    }
 
-    // Inputs
-    handleKeyDown(event) {
-        event.preventDefault();
 
-        switch(event.code) {
-            case this.keybinds.move_up:
-                this.moveUp();
-                break;
 
-            case this.keybinds.move_left:
-                this.moveLeft();
-                break;
+    export class MultiplayerGame extends Game
+{
+    constructor() {
+        super();
+        this.numPlayers = 2;
+        this.player1Score = 0;
+        this.player2Score = 0;
+        this.scoreGoal = 1000;
+        this.points = 1000; // Points per pvp kill
+        this.timerHandle = null;
+        this.enemySpawnRate = 10;
+        this.enemySpawnTimerHandle = null;
+        this.powerupSpawnrate = 10;
+        this.powerupSpawnTimerHandle = null;
+        this.seconds = 0;
+        this.minutes = 0;
 
-            case this.keybinds.move_down:
-                this.moveDown();
-                break;
-
-            case this.keybinds.move_right:
-                this.moveRight();
-                break;
-
-            case this.keybinds.drop_bomb:
-                this.dropBomb();
-                break;
-        }
-    }
-
-    handleKeyUp(event) {
-        event.preventDefault();
-
-        switch(event.code) {
-            case this.keybinds.move_up:
-            case this.keybinds.move_down:
-                this.dy = 0;
-                break;
-
-            case this.keybinds.move_left:
-            case this.keybinds.move_right:
-                this.dx = 0;
-                break;
-        }
-    }
-
-    // Mobile controls
-    bindMobile() {
-        document.getElementById("mob-dir-up").addEventListener("touchstart", () => { this.moveUp() });
-        document.getElementById("mob-dir-up").addEventListener("touchend", () => { this.dy = 0; });
-        document.getElementById("mob-dir-down").addEventListener("touchstart", () => { this.moveDown() });
-        document.getElementById("mob-dir-down").addEventListener("touchend", () => { this.dy = 0; });
-        document.getElementById("mob-dir-right").addEventListener("touchstart", () => { this.moveRight() });
-        document.getElementById("mob-dir-right").addEventListener("touchend", () => { this.dx = 0; });
-        document.getElementById("mob-dir-left").addEventListener("touchstart", () => { this.moveLeft() });
-        document.getElementById("mob-dir-left").addEventListener("touchend", () => { this.dx = 0; });
-        document.getElementById("mob-bomb").addEventListener("touchstart", () => { this.dropBomb(); });
+        this.restaring = false;
+        this.isOver = false;
     }

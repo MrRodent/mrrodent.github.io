@@ -1,11 +1,11 @@
-import { ctx, tileSize, game, globalPause, bigBomb } from "./main.js";
-import { getMusicalTimeout, msPerBeat, playAudio, playRiser, playTrack, randomSfx, sfxs, tracks } from "./audio.js";
+import { ctx, tileSize, game, globalPause, bigBomb, isMultiplayer } from "./main.js";
+import { getMusicalTimeout, msPerBeat, playAudio, playBirdsong, playRiser, playTrack, randomSfx, sfxs, tracks } from "./audio.js";
 import { spawnEnemiesAtLocation, enemies } from "./enemy.js";
 import { getDistanceTo, getLinearUntilObstacle } from "./utils.js";
 import { findPlayerById, players } from "./player.js";
 import { exitLocation } from "./tile.js";
 import { spriteSheets } from "./spritesheets.js";
-import { lastLevel } from "./gamestate.js";
+import { lastLevel, levelType } from "./gamestate.js";
 import { initPickups } from "./pickups.js";
 import { createFloatingText } from "./particles.js";
 
@@ -61,8 +61,32 @@ export class Bomb {
 
                     if (!game.beatDropped) {
                         setTimeout(() => {
-                            if (game.level === 1) {
+                            if (game.level === 1 && !isMultiplayer) {
+                                playBirdsong();
                                 playTrack(tracks['SLOWHEART']);
+                            }
+                            else if (isMultiplayer) {
+                                // Don't change the music if player dies on spawn
+                                let spawnDeath = false;
+                                players.forEach(player => {
+                                    if (player.isDead) {
+                                        spawnDeath = true;
+                                    }
+                                });
+                                if (spawnDeath) return;
+
+                                if (levelType === 'forest_day') {
+                                    playBirdsong();
+                                    playTrack(tracks['MP_DAY']);
+                                }
+                                else if (levelType === 'forest_night') {
+                                    playTrack(tracks['MP_NIGHT']);
+                                }
+                                else if (levelType === 'hell') {
+                                    playTrack(tracks['MP_HELL']);
+                                } else {
+                                    playTrack(tracks['MP_WAIT']);
+                                }
                             }
                             else if (lastLevel) {
                                 playTrack(tracks['HEART_DRONES']);
@@ -203,6 +227,7 @@ function setTilesOnFire(tiles, playerID) {
                         if (exitLocation.isOpen) {
                             game.toggleDoor();
                         }
+                        playAudio(sfxs['BLASTED_DOOR']);
                         spawnEnemiesAtLocation(currentTile, game.level + 3);
                         currentTile.hasSpawnedEnemies = true;
                     }

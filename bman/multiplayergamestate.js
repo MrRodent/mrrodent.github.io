@@ -1,10 +1,10 @@
 import { Game, setLevelHeight, setLevelPowerup, setLevelType, setLevelWidth, setPowerupCount, setSoftwallPercent } from "./gamestate.js";
-import { stopBirdsong, stopCurrentTrack } from "./audio.js";
+import { playTrack, stopBirdsong, stopCurrentTrack, tracks } from "./audio.js";
 import { clearBombs } from "./bomb.js";
 import { setCameraX } from "./camera.js";
 import { clearEnemies, enemyType, spawnEnemyByTypeAtLocation } from "./enemy.js";
-import { setTextures, initHardWallsCanvas } from "./level.js";
-import { ctx, tileSize, level, setGlobalPause, fadeTransition, locBlinkers } from "./main.js";
+import { setTextures, initHardWallsCanvas, getRandomLevelType } from "./level.js";
+import { ctx, tileSize, level, setGlobalPause, fadeTransition, locBlinkers, globalPause, game } from "./main.js";
 import { updateP1Score, updateP2Score, updatePVPTimerDisplay } from "./page.js";
 import { clearPlayers, findPlayerById, players, resetPlayerPositions, spawnPlayers } from "./player.js";
 import { createTiles, powerupLocations} from "./tile.js";
@@ -13,14 +13,33 @@ import { initPickups, randomPowerup } from "./pickups.js";
 import { createFloatingText } from "./particles.js";
 import { locBlinkingAnimation } from "./animations.js";
 
-const PVPlevelData = {
-    width: 13,
-    height: 13,
-    type: "forest_night",
-    powerup: "random",
-    powerupCount: 5,
-    softwallPercent: 0.2,
-};
+let currentLevelType = "hell";
+function createPVPLevel() {
+    let randomLevelType = getRandomLevelType();
+    while (randomLevelType === currentLevelType) {
+        randomLevelType = getRandomLevelType();
+    }
+    currentLevelType = randomLevelType;
+    
+    const randomInt = Math.floor(Math.random() * (10 - 5 + 1)) + 5;
+    let randomFloat;
+    if (currentLevelType !== 'hell') {
+        randomFloat = Math.random() * (0.4 - 0.2) + 0.2;
+    } else {
+        randomFloat = Math.random() * (0.2 - 0.1) + 0.1;
+    }
+    
+    const level = {
+        width: 13,
+        height: 13,
+        type: randomLevelType,
+        powerup: "random",
+        powerupCount: randomInt,
+        softwallPercent: randomFloat,
+    };
+    
+    return level
+}
 
 const spawnType = {
     ENEMY: "Enemy",
@@ -84,48 +103,72 @@ export class MultiplayerGame extends Game
         this.numPlayers = 2;
         this.player1Score = 0;
         this.player2Score = 0;
-        this.points = 1000; // Points per pvp kill
+        this.pvpPoints = 1000;
+        this.killedByEnemyPoints = 500;
         this.timerHandle = null;
-        this.enemySpawnRate = 10;
+        this.enemySpawnRate = 15;
         this.enemySpawnTimerHandle = null;
         this.powerupSpawnrate = 10;
         this.powerupSpawnTimerHandle = null;
         this.seconds = 0;
         this.minutes = 0;
+
+        this.restaring = false;
     }
 
     startTimer() {
         this.timerHandle = setInterval(() => {
 
+            if(globalPause) return;
+
             // Päivittää ajan
+            updatePVPTimerDisplay(`${this.minutes.toString().padStart(2, '0')}:
+                                  ${this.seconds.toString().padStart(2, '0')}`);
+
             if(++this.seconds % 60 == 0) {
                 ++this.minutes;
                 this.seconds = 0;
             }
 
-            updatePVPTimerDisplay(`${this.minutes.toString().padStart(2, '0')}:
-                                  ${this.seconds.toString().padStart(2, '0')}`);
-
-            // Spawnaa zombeja tietyn ajan välein
+            // Spawnaa vihollsia tietyn ajan välein
             if(this.seconds % this.enemySpawnRate == 0) {
                 const location = getRandomWalkablePoint();
+                if(location) {
+                    let blinker = new SpawnBlinker();
+                    blinker.location = location;
+                    blinker.startBlinking(spawnType.ENEMY);
+                    pvpBlinkers.push(blinker);
 
-                let blinker = new SpawnBlinker();
-                blinker.location = location;
-                blinker.startBlinking(spawnType.ENEMY);
-                pvpBlinkers.push(blinker);
+                    let counter = 0;
+                    this.enemySpawnTimerHandle = setInterval(() => {
+                        if (globalPause) return;
 
-                let counter = 0;
-                this.enemySpawnTimerHandle = setInterval(() => {
-                    if(counter >= 5) {
-                        blinker.stopBlinking();
-                        counter = 0;
-                        clearInterval(this.enemySpawnTimerHandle);
-                        spawnEnemyByTypeAtLocation(enemyType.ZOMBIE, location);
-                    }
-                    counter++;
-                }, 1000);
+                        if(counter >= 5) {
+                            blinker.stopBlinking();
+                            counter = 0;
+                            clearInterval(this.enemySpawnTimerHandle);
+
+                            let enemies;
+                            if (currentLevelType === "forest_day") {
+                                enemies = ["ZOMBIE", "ZOMBIE", "WITCH"];
+                            } 
+                            else if (currentLevelType === "forest_night") {
+                                enemies = ["ZOMBIE", "GHOST", "SKELETON"];
+                            }
+                            else if (currentLevelType === "hell") {
+                                enemies = ["SKELETON", "SKELETON", "GHOST"];
+                            } else {
+                                enemies = ["ZOMBIE", "SKELETON", "GHOST", "WITCH"];
+                            }
+                            const randomEnemy = enemies[Math.floor(Math.random() * enemies.length)];
+            
+                            spawnEnemyByTypeAtLocation(enemyType[randomEnemy], location);
+                        }
+                        counter++;
+                    }, 1000);
+                }
             }
+
             // Spawnaa random poweruppeja tietyn ajan välein
             if(this.seconds % this.powerupSpawnrate == 0) {
 
@@ -138,6 +181,8 @@ export class MultiplayerGame extends Game
 
                     let counter = 0;
                     this.powerupSpawnTimerHandle = setInterval(() => {
+                        if (globalPause) return;
+
                         if(counter >= 3) {
                             blinker.stopBlinking()
                             counter = 0;
@@ -155,6 +200,11 @@ export class MultiplayerGame extends Game
         }, 1000);
     }
 
+    stopTimer() {
+        clearInterval(this.timerHandle);
+        this.timerHandle = null;
+    }
+
     over() {
         if(this.enemySpawnTimerHandle) {
             clearInterval(this.enemySpawnTimerHandle);
@@ -164,6 +214,7 @@ export class MultiplayerGame extends Game
         }
         clearEnemies();
         pvpBlinkers.length = 0;
+        locBlinkers.stopBlinking();
         if(this.timerHandle) {
             clearInterval(this.timerHandle);
             this.timerHandle = null;
@@ -176,6 +227,8 @@ export class MultiplayerGame extends Game
     }
 
     newGame() {
+        game.isRunning = true;
+        
         pvpBlinkers.length = 0;
         locBlinkers.stopBlinking();
         this.player1Score = 0;
@@ -183,7 +236,7 @@ export class MultiplayerGame extends Game
         this.seconds = 0;
         this.minutes = 0;
         this.startTimer();
-        stopBirdsong(); // TODO: Halutaanko jotain audiota tänne?
+        stopBirdsong();
         stopCurrentTrack();
         fadeTransition.fadeIn();
         setGlobalPause(true);
@@ -197,13 +250,16 @@ export class MultiplayerGame extends Game
     }
 
     initLevel() {
-        // Heartbeatit pois
-        this.beatDropped = true;
         // Reset camera position
         setCameraX(0);
     }
 
     newLevel() {
+        game.beatDropped = false;
+        playTrack(tracks['MP_WAIT']);
+        stopBirdsong();
+        
+        const PVPlevelData = createPVPLevel();
         setGlobalPause(true);
         clearEnemies();
         clearBombs();
@@ -235,7 +291,27 @@ export class MultiplayerGame extends Game
 
     restartLevel()
     {
+        // Prevent level restarting twice, if both players die at same time.
+        if(this.restaring) return;
+
+        this.restaring = true;
+
+        game.beatDropped = false;
+        playTrack(tracks['MP_WAIT']);
+        stopBirdsong();
+        
+        const PVPlevelData = createPVPLevel();
+        this.stopTimer();
+        // Clear spawn timers to prevent enemies traveling from previous round
+        if(this.enemySpawnTimerHandle) {
+            clearInterval(this.enemySpawnTimerHandle);
+        }
+        if(this.powerupSpawnTimerHandle) {
+            clearInterval(this.powerupSpawnTimerHandle);
+        }
         pvpBlinkers.length = 0;
+        locBlinkers.stopBlinking();
+
         setTimeout(() => {
             setGlobalPause(true);
             this.seconds = 0;
@@ -272,40 +348,57 @@ export class MultiplayerGame extends Game
             });
             resetPlayerPositions();
             clearEnemies();
+            this.startTimer();
+            this.restaring = false;
         }, 2000);
     }
     
     updateScore(playerWhoDied, playerWhoKilled, enemyWhoKilled) {
 
         const player = findPlayerById(playerWhoDied);
-        if(player)
-        {
+        if(player) {
+
             const x = player.x;
             const y = player.y;
 
+            if (enemyWhoKilled) {
+                if (player.id == 0) {
+                    createFloatingText({ x: x, y: y }, `+${this.killedByEnemyPoints}`);
+                    this.player2Score += this.killedByEnemyPoints;
+                    updateP2Score(this.player2Score);
+                } else if (player.id == 1) {
+                    createFloatingText({ x: x, y: y }, `+${this.killedByEnemyPoints}`);
+                    this.player1Score += this.killedByEnemyPoints;
+                    updateP1Score(this.player1Score);
+                }
+                return;
+            }
+
             if (playerWhoDied === playerWhoKilled) {
 
-                // Reset powerupit jos pommittaa ittensä
+                // Reset powerups if self kill
                 player.powerup.reset();
                 player.speed = player.originalSpeed;
 
-                if (playerWhoDied === 0) {
-                    this.player1Score -= this.points;
-                    createFloatingText({ x: x, y: y }, `-${this.points}`);
-                    updateP1Score(this.player1Score);
-                } else {
-                    this.player2Score -= this.points;
-                    createFloatingText({ x: x, y: y }, `-${this.points}`);
+                // Add scores to the other player
+                if(player.id == 0) {
+                    createFloatingText({ x: x, y: y }, `+${this.pvpPoints}`);
+                    this.player2Score += this.pvpPoints;
                     updateP2Score(this.player2Score);
+                } else if(player.id == 1) {
+                    createFloatingText({ x: x, y: y }, `+${this.pvpPoints}`);
+                    this.player1Score += this.pvpPoints;
+                    updateP1Score(this.player1Score);
                 }
+
             } else {
                 if (playerWhoKilled === 0) {
-                    this.player1Score += this.points;
-                    createFloatingText({ x: x, y: y }, `+${this.points}`);
+                    createFloatingText({ x: x, y: y }, `+${this.pvpPoints}`);
+                    this.player1Score += this.pvpPoints;
                     updateP1Score(this.player1Score);
                 } else {
-                    this.player2Score += this.points;
-                    createFloatingText({ x: x, y: y }, `+${this.points}`);
+                    createFloatingText({ x: x, y: y }, `+${this.pvpPoints}`);
+                    this.player2Score += this.pvpPoints;
                     updateP2Score(this.player2Score);
                 }
             }
@@ -321,11 +414,9 @@ export class MultiplayerGame extends Game
 
             if (playerID === 0) {
                 this.player1Score += points;
-                createFloatingText({ x: x, y: y }, `+${points}`);
                 updateP1Score(this.player1Score);
             } else {
                 this.player2Score += points;
-                createFloatingText({ x: x, y: y }, `+${points}`);
                 updateP2Score(this.player2Score);
             }
         }

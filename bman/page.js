@@ -1,10 +1,11 @@
 import { enemies, enemyType, spawnEnemiesByType } from "./enemy.js";
 import { ctx, tileSize, game, setGlobalPause, globalPause, setNumOfPlayers, isMultiplayer } from "./main.js";
 import { fetchEverything, lastLevel, levelHeight, levelWidth } from "./gamestate.js";
-import { players } from "./player.js";
-import { playAudio, sfxs } from "./audio.js";
+import { godMode, players, toggleGodMode } from "./player.js";
+import { playAudio, playTrack, sfxs, stopBirdsong, tracks } from "./audio.js";
 import { loadTextures } from "./level.js";
 import { loadSpriteSheets } from "./spritesheets.js";
+import { isMobile } from "./mobile.js";
 
 // Settings
 export let wonGame = false;
@@ -47,6 +48,7 @@ export function updatePVPTimerDisplay(value) {
 // Main menu / buttons
 const playButton = document.getElementById("playGameButton");
 const loadingText = document.getElementById("loading-text");
+const titleLogo = document.getElementById("title-logo");
 const playContainer = document.querySelector(".play-game-container");
 const infoDisplays = document.querySelector(".info-displays");
 const pvpInfoDisplays = document.querySelector(".pvp-info-displays");
@@ -147,8 +149,15 @@ closeButton.addEventListener('click', function() {
 });
 
 playButton.addEventListener('click', async function() {
-    loadingText.style.visibility = 'visible';
-    playButton.style.visibility = 'hidden';
+    if (isMobile) {
+        loadingText.style.display = 'none';
+        loadingText.style.visibility = 'visible';
+        playButton.style.display = 'none';
+        titleLogo.style.display = 'flex';
+    } else {
+        loadingText.style.visibility = 'visible';
+        playButton.style.visibility = 'hidden';
+    }
     let loadTimer = animateLoadingText();
     await fetchEverything();
     await loadTextures();
@@ -184,6 +193,7 @@ const exitButton = document.getElementById("exitButton");
 const ggExitButton = document.getElementById("gg-exitButton");
 const gameOverScore = document.getElementById("game-over-score");
 const ggScore = document.getElementById("gg-score");
+const ggHeader = document.getElementById("gg-header");
 
 export function showGameOverMenu()
 {
@@ -199,6 +209,7 @@ restartButton.addEventListener('click', function() {
 });
 
 exitButton.addEventListener('click', function() {
+    game.isRunning = false;
     menuBackground.style.visibility = 'hidden';
     gameOverMenu.style.visibility = 'hidden';
     showMainMenu();
@@ -211,6 +222,11 @@ ggExitButton.addEventListener('click', function() {
     ggMenu.style.visibility = 'hidden';
     localStorage.clear();
     showMainMenu();
+    
+    if (isMultiplayer) {
+        playTrack(tracks['SLOWHEART']);
+        stopBirdsong();
+    }
 });
 export function showGGMenu()
 {
@@ -251,6 +267,8 @@ pauseMenuContinueButton.addEventListener('click', function() {
 });
 
 pauseMenuExitButton.addEventListener('click', function() {
+    game.isRunning = false;
+
     menuBackground.style.visibility = 'hidden';
     pauseMenu.style.visibility = 'hidden';
     mobilePauseBtn.style.visibility = 'hidden';
@@ -263,6 +281,8 @@ pauseMenuExitButton.addEventListener('click', function() {
         updateP2Score(0);
         game.over(); // Clears timer handles etc.
     }
+
+    playTrack(tracks['SLOWHEART']);
 });
 
 
@@ -352,6 +372,16 @@ killEnemiesButton.addEventListener("click", function() {
     enemies.forEach(enemy => {
         enemy.die();
     })
+});
+
+let godModeButton = document.getElementById("god-mode");
+godModeButton.addEventListener("click", function() {
+    toggleGodMode();
+    if(godMode) {
+        godModeButton.innerText = "GodMode On ";
+    } else {
+        godModeButton.innerText = "GodMode Off";
+    }
 });
 
 let killPlayersButton = document.getElementById("kill-players");

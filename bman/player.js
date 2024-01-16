@@ -8,7 +8,11 @@ import { spriteSheets } from "./spritesheets.js";
 import { showGGMenu } from "./page.js";
 
 
-const godMode = false;
+export let godMode = false;
+export function toggleGodMode() {
+    godMode = !godMode
+}
+
 export const playerSpeed = 150;
 
 export const Direction = {
@@ -428,7 +432,6 @@ class Player
 
                     if(bombTile.bomb.hasExploded) {
                         bombTile.isWalkable = true;
-                        bombTile.isDeadly = false;
                         clearInterval(posCheck);
                     }
 
@@ -636,6 +639,7 @@ class Player
             if (!this.isDead) {
                 playAudio(sfxs['DEATH']);
                 this.isDead = true;
+
                 game.updateScore(this.id, instigator, enemyWhoKilled);
                 game.restartLevel();
             }

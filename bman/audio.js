@@ -19,6 +19,10 @@ const TrackURLs = {
     INT1: "assets/music/song_intensity01.mp3",
     INT2: "assets/music/song_intensity02.mp3",
     INT3: "assets/music/song_intensity03.mp3",
+    MP_WAIT: "assets/music/mp_song_wait.mp3",
+    MP_DAY: "assets/music/mp_song_day.mp3",
+    MP_NIGHT: "assets/music/mp_song_night.mp3",
+    MP_HELL: "assets/music/mp_song_hell.mp3",
 }
 
 const SfxURLs = {
@@ -30,8 +34,9 @@ const SfxURLs = {
     TITLE: "assets/sfx/title.mp3",
     DOOR_OPEN: "assets/sfx/door_open.mp3",
     DOOR_CLOSE: "assets/sfx/door_close.mp3",
+    BLASTED_DOOR: "assets/sfx/blasted_door.wav",
     GAMEOVER: "assets/sfx/gameover.mp3",
-    DEATH: "assets/sfx/death.wav",
+    DEATH: "assets/sfx/death2.wav",
     STEPS: "assets/sfx/steps.mp3",
     RISER: "assets/sfx/riser.mp3",
     VICTORY: "assets/sfx/victory.mp3",

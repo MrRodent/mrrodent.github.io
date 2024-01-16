@@ -7,7 +7,6 @@ import { getMusicalTimeout, playAudio, randomSfx, sfxs } from "./audio.js";
 import { EnemyDeathAnimation, deathRow, isBigBombOver } from "./animations.js";
 import { spriteSheets } from "./spritesheets.js";
 import { createFloatingText } from "./particles.js";
-import { isMobile } from "./mobile.js";
 import { initPickups } from "./pickups.js";
 
 export const enemyType = {
@@ -35,6 +34,7 @@ class Enemy
     constructor(x, y, w, h, newMovementMode, speed, type) {
         this.id = ++Enemy.lastId;
         this.justSpawned = true;
+        this.spawnImmortalityTime = isMultiplayer ? 0 : 2000;
         this.score = 0;
 
         // Coordinates
@@ -92,7 +92,7 @@ class Enemy
 
         switch(this.enemyType) {
             case enemyType.ZOMBIE: {
-                if (bigBombOverlay && !isBigBombOver) {
+                if (bigBombOverlay && !isBigBombOver && !isMultiplayer) {
                     this.spriteSheet.src = spriteSheets.zombie_outline;
                 } else {
                     this.spriteSheet.src = spriteSheets.zombie;
@@ -104,7 +104,7 @@ class Enemy
                 break;
             }
             case enemyType.GHOST: {
-                if (bigBombOverlay && !isBigBombOver) {
+                if (bigBombOverlay && !isBigBombOver && !isMultiplayer) {
                     this.spriteSheet.src = spriteSheets.ghost_outline;
                 } else {
                     this.spriteSheet.src = spriteSheets.ghost;
@@ -117,7 +117,7 @@ class Enemy
                 break;
             }
             case enemyType.SKELETON: {
-                if (bigBombOverlay && !isBigBombOver) {
+                if (bigBombOverlay && !isBigBombOver && !isMultiplayer) {
                     this.spriteSheet.src = spriteSheets.skeleton_outline;
                 } else {
                     this.spriteSheet.src = spriteSheets.skeleton;
@@ -129,7 +129,7 @@ class Enemy
                 break;
             }
             case enemyType.WITCH: {
-                if (bigBombOverlay && !isBigBombOver) {
+                if (bigBombOverlay && !isBigBombOver && !isMultiplayer) {
                     this.spriteSheet.src = spriteSheets.witch_outline;
                 } else {
                     this.spriteSheet.src = spriteSheets.witch;
@@ -138,15 +138,17 @@ class Enemy
                 this.speed = 900;
                 this.score = 350;
                 this.followPlayer();
-                this.initWitch();
+                if (!isMultiplayer) {
+                    this.initWitch();
+                }
                 break;
             }
         }
         
         if (this.justSpawned) {
-            this.spawnImmortality = setTimeout(() => {
+            setTimeout(() => {
                 this.justSpawned = false;
-            }, 2000);
+            }, this.spawnImmortalityTime);
         }
     }
 
@@ -451,7 +453,7 @@ class Enemy
         {
             game.increaseScore(this.score);
         } else {
-            game.increaseScore(-1, this.score);
+            game.increaseScore(playerID, this.score);
         }
         createFloatingText({x: this.x, y: this.y}, `+${this.score}`);
 
